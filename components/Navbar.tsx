@@ -2,21 +2,26 @@
 
 import Link from "next/link";
 
-export default function Navbar() {
+interface NavbarProps {
+  cartCount: number;
+  onOpenCart: () => void;
+}
+
+export default function Navbar({ cartCount, onOpenCart }: NavbarProps) {
   return (
     <nav className="fixed w-full z-50 glass-panel">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Brand Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue to-brand-green flex items-center justify-center text-white shadow-lg">
-              {/* Globe Icon SVG */}
+            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-blue-600 via-blue-500 to-emerald-600 flex items-center justify-center text-white shadow-lg">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -27,7 +32,7 @@ export default function Navbar() {
               </svg>
             </div>
             <div className="flex flex-col">
-              <span className="font-heading font-extrabold text-xl text-slate-900 leading-none">
+              <span className="font-bold text-xl text-slate-900 leading-none tracking-tight">
                 NEXGEN
               </span>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
@@ -38,19 +43,25 @@ export default function Navbar() {
 
           {/* Search Pill (Desktop) */}
           <div className="hidden md:flex flex-1 max-w-xl mx-12">
+            <label htmlFor="search" className="sr-only">
+              Search products, brands, or SKUs
+            </label>
             <div className="relative w-full group">
               <input
+                id="search"
                 type="text"
-                className="input-pill block w-full pl-12 pr-4 py-3 bg-slate-100 text-slate-600 placeholder-slate-400 transition-all shadow-inner focus:bg-white"
+                className="input-pill block w-full pl-12 pr-4 py-3 bg-slate-100/80 text-slate-900 placeholder-slate-500 transition-all shadow-inner focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-xl border border-slate-200"
                 placeholder="Search products, brands, or SKUs..."
+                aria-describedby="search-help"
               />
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-slate-500">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -66,18 +77,25 @@ export default function Navbar() {
           {/* Actions */}
           <div className="flex items-center gap-6">
             <Link
-              href="#"
-              className="text-sm font-semibold text-slate-500 hover:text-brand-blue transition-colors"
+              href="/support"
+              className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-sm"
+              aria-label="Visit support page"
             >
               Support
             </Link>
-            <button className="relative p-2 text-slate-500 hover:text-brand-blue transition-colors">
+
+            <button
+              onClick={onOpenCart}
+              className="relative p-2 text-slate-600 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg"
+              aria-label={`View cart, ${cartCount} items`}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -86,11 +104,20 @@ export default function Navbar() {
                   d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                 />
               </svg>
-              <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-brand-green rounded-full border-2 border-white"></span>
+              {cartCount > 0 && (
+                <div className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white ring-2 ring-white/50 min-w-5">
+                  {cartCount > 99 ? "99+" : cartCount}
+                </div>
+              )}
             </button>
-            <button className="bg-brand-navy text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-slate-800 transition-colors shadow-lg hover:shadow-xl">
+
+            <Link
+              href="/login"
+              className="bg-slate-900 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-slate-800 transition-all shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 active:scale-[0.98]"
+              aria-label="Partner login portal"
+            >
               Partner Login
-            </button>
+            </Link>
           </div>
         </div>
       </div>
