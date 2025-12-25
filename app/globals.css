@@ -1,26 +1,81 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+    /* 1. Fonts
+     Mapped to the variables injected by Next.js in app/layout.tsx
+  */
+    --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    --font-heading: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+
+    /* 2. Brand Colors */
+    --color-brand-navy: #0f172a;
+    --color-brand-dark: #0b0f19; /* Deep Space */
+    --color-brand-blue: #3b82f6; /* Electric Blue */
+    --color-brand-blueLight: #60a5fa;
+    --color-brand-green: #10b981; /* Vibrant Mint */
+    --color-brand-greenLight: #34d399;
+    --color-brand-surface: #ffffff;
+    --color-brand-muted: #94a3b8;
+
+    /* 3. Custom Shadows */
+    --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+    --shadow-glow-blue: 0 0 20px -5px rgba(59, 130, 246, 0.3);
+    --shadow-glow-green: 0 0 20px -5px rgba(16, 185, 129, 0.3);
+
+    /* 4. Animations & Keyframes */
+    --animate-float: float 10s ease-in-out infinite;
+    --animate-float-delayed: float 10s ease-in-out 5s infinite;
+    --animate-pulse-slow: pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+    @keyframes float {
+        0%,
+        100% {
+            transform: translate(0, 0) scale(1);
+        }
+        50% {
+            transform: translate(20px, -20px) scale(1.05);
+        }
+    }
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Custom Utilities
+  We keep our component classes here.
+*/
+@layer utilities {
+    .glass-panel {
+        @apply bg-white/85 backdrop-blur-md border-b border-white/20 shadow-sm;
+    }
+
+    .glass-card {
+        @apply bg-white/60 backdrop-blur-sm border border-white/40 shadow-soft;
+    }
+
+    .aurora-blob {
+        @apply absolute rounded-full opacity-40 blur-[80px] pointer-events-none mix-blend-screen;
+        will-change: transform;
+    }
+
+    .btn-pill {
+        @apply rounded-full px-6 py-3 font-medium transition-all duration-300;
+    }
+
+    .input-pill {
+        @apply rounded-full border-0 focus:ring-2 focus:ring-brand-blue/20;
+    }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* Base resets */
+@layer base {
+    body {
+        @apply bg-slate-50 text-slate-600;
+    }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-heading text-slate-900;
+    }
 }
