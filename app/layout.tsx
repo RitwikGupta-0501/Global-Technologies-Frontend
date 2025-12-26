@@ -18,9 +18,8 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "NexGen Distribution",
-  description:
-    "Authorized Distributor for Enterprise Software & Fleet Hardware",
+  title: "Global Technologies | Home",
+  description: "Distributors of premium software and hardware solutions.",
 };
 
 export default function RootLayout({
