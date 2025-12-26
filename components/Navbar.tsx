@@ -112,7 +112,7 @@ export default function Navbar({ cartCount, onOpenCart }: NavbarProps) {
             </button>
 
             <Link
-              href="/login"
+              href="/auth"
               className="bg-slate-900 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-slate-800 transition-all shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 active:scale-[0.98]"
               aria-label="Partner login portal"
             >
