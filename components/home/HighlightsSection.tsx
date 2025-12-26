@@ -8,7 +8,7 @@ export default function HighlightsSection() {
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-2 gap-6">
           {/* Software Card */}
-          <div className="group glass-card p-8 rounded-3xl hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden bg-white">
+          <div className="group glass-card p-8 rounded-3xl hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden bg-white shadow-lg border border-slate-100">
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
             <div className="relative z-10 flex flex-col h-full">
               <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-6">
@@ -70,7 +70,7 @@ export default function HighlightsSection() {
           </div>
 
           {/* Hardware Card */}
-          <div className="group glass-card p-8 rounded-3xl hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden bg-white">
+          <div className="group glass-card p-8 rounded-3xl hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden bg-white shadow-lg border border-slate-100">
             <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
             <div className="relative z-10 flex flex-col h-full">
               <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6">
@@ -135,6 +135,29 @@ export default function HighlightsSection() {
                 </Link>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Scroll Indicator - Pushes content down and provides visual cue */}
+        <div className="mt-24 flex flex-col items-center justify-center text-slate-400 opacity-80 hover:opacity-100 transition-opacity">
+          <span className="text-xs font-bold uppercase tracking-widest mb-3">
+            Scroll to discover
+          </span>
+          <div className="animate-bounce p-2 rounded-full bg-white/50 backdrop-blur-sm border border-slate-200">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-slate-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+              />
+            </svg>
           </div>
         </div>
       </div>
