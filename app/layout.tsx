@@ -1,5 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import { Toaster } from "sonner";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 
 // Font: Inter (Body)
@@ -31,6 +32,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${jakarta.variable}`}>
       <body className="bg-slate-50 text-slate-600 font-sans antialiased selection:bg-brand-blue selection:text-white">
         {children}
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );

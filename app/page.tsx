@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useCallback } from "react";
 import Navbar from "../components/Navbar";
-import ProductCard, { Product } from "../components/ProductCard";
+import { Product } from "../components/ProductCard";
 import HeroSection from "../components/home/HeroSection";
 import HighlightsSection from "../components/home/HighlightsSection";
 import CartSidebar from "../components/home/CartSidebar";
@@ -112,7 +112,6 @@ export default function Home() {
       }
       return [...prev, { ...product, qty: 1 }];
     });
-    setIsCartOpen(true);
   }, []);
 
   const removeFromCart = useCallback((id: number) => {
@@ -121,11 +120,24 @@ export default function Home() {
 
   const updateQty = useCallback((id: number, delta: number) => {
     setCart((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, qty: Math.max(1, item.qty + delta) } : item,
-      ),
+      prev
+        .map((item) =>
+          item.id === id ? { ...item, qty: item.qty + delta } : item,
+        )
+        .filter((item) => item.qty > 0),
     );
   }, []);
+
+  // after updateQty
+  const incrementQty = useCallback(
+    (id: number) => updateQty(id, 1),
+    [updateQty],
+  );
+
+  const decrementQty = useCallback(
+    (id: number) => updateQty(id, -1),
+    [updateQty],
+  );
 
   const handleProceed = useCallback(() => {
     if (fixedItemsCount > 0 && quoteItemsCount > 0) {
@@ -156,7 +168,13 @@ export default function Home() {
       <HighlightsSection />
 
       {/* Product grid still uses ProductCard; wrapped in its own component */}
-      <ProductGrid products={products} onAddToCart={addToCart} />
+      <ProductGrid
+        products={products}
+        cart={cart}
+        onAddToCart={addToCart}
+        onIncrement={incrementQty}
+        onDecrement={decrementQty}
+      />
 
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-400 py-16 border-t border-slate-800">

@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { Product } from "../ProductCard";
 
-interface CartItem extends Product {
+export interface CartItem extends Product {
   qty: number;
 }
 
@@ -90,7 +90,7 @@ export default function CartSidebar({
                   : "Confirmed"}
           </h2>
           <button
-            onClick={onReset}
+            onClick={onClose}
             className="p-2 hover:bg-slate-100 rounded-full text-slate-500"
             aria-label="Close cart"
           >

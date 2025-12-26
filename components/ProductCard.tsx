@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import Image from "next/image";
+import { toast } from "sonner";
 import { Plus } from "lucide-react";
 
 export interface Product {
@@ -18,10 +19,19 @@ export interface Product {
 
 interface ProductProps {
   product: Product;
+  currentQty: number;
   onAddToCart: (product: Product) => void;
+  onIncrement: (productId: number) => void;
+  onDecrement: (productId: number) => void;
 }
 
-export default function ProductCard({ product, onAddToCart }: ProductProps) {
+export default function ProductCard({
+  product,
+  currentQty,
+  onAddToCart,
+  onIncrement,
+  onDecrement,
+}: ProductProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -149,24 +159,63 @@ export default function ProductCard({ product, onAddToCart }: ProductProps) {
             {product.priceLabel}
           </p>
           <p className="font-bold text-xl text-slate-900">
-            {isQuote ? (
-              <span>Price on Request</span>
-            ) : (
-              <span>{formatPrice()}</span>
-            )}
+            {!isQuote ? <span>{formatPrice()}</span> : <span />}
           </p>
         </div>
-        <button
-          onClick={() => onAddToCart(product)}
-          className={`w-10 h-10 rounded-full text-white flex items-center justify-center transition-all shadow-lg hover:scale-105 ${
-            product.color === "blue"
-              ? "bg-slate-900 hover:bg-blue-600"
-              : "bg-slate-900 hover:bg-emerald-600"
-          }`}
-          aria-label="Add to Cart"
-        >
-          <Plus aria-hidden="true" />
-        </button>
+
+        {/* CTA area */}
+        {isQuote ? (
+          <button
+            className="px-4 py-2 rounded-full bg-slate-900 text-white text-xs font-semibold hover:bg-blue-600 transition-colors"
+            aria-label="Request quote"
+            onClick={() => {
+              toast("Request for quote sent", {
+                description: `For: ${product.name}`,
+                duration: 3000,
+              });
+            }}
+          >
+            Request for Quote
+          </button>
+        ) : currentQty === 0 ? (
+          <button
+            onClick={() => {
+              toast.success(`${product.name} added to cart!`, {
+                description: `Quantity: 1 • ${formatPrice()}`,
+                duration: 3000,
+              });
+              onAddToCart(product);
+            }}
+            className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:scale-105 text-white ${
+              product.color === "blue"
+                ? "bg-slate-900 hover:bg-blue-600"
+                : "bg-slate-900 hover:bg-emerald-600"
+            }`}
+            aria-label="Add to cart"
+          >
+            <Plus aria-hidden="true" className="w-4 h-4" />
+          </button>
+        ) : (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onDecrement(product.id)}
+              className="w-8 h-8 rounded-full border border-slate-300 flex items-center justify-center hover:bg-slate-100 text-slate-700 font-semibold text-base leading-none"
+              aria-label="Decrease quantity"
+            >
+              −
+            </button>
+            <span className="text-sm font-medium w-6 text-center">
+              {currentQty}
+            </span>
+            <button
+              onClick={() => onIncrement(product.id)}
+              className="w-8 h-8 rounded-full border border-slate-300 flex items-center justify-center hover:bg-slate-100 text-slate-700 font-semibold text-base leading-none"
+              aria-label="Increase quantity"
+            >
+              +
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
