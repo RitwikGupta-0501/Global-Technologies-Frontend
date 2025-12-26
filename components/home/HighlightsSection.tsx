@@ -1,5 +1,6 @@
-// components/home/HighlightsSection.tsx
 "use client";
+
+import Link from "next/link";
 
 export default function HighlightsSection() {
   return (
@@ -9,7 +10,7 @@ export default function HighlightsSection() {
           {/* Software Card */}
           <div className="group glass-card p-8 rounded-3xl hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden bg-white">
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-            <div className="relative z-10">
+            <div className="relative z-10 flex flex-col h-full">
               <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-6">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -32,13 +33,38 @@ export default function HighlightsSection() {
               <p className="text-slate-500 mb-8 leading-relaxed">
                 Secure licensing for creative, security, and development tools.
               </p>
-              <div className="flex gap-2 flex-wrap mb-8">
-                <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
-                  Unity
-                </span>
-                <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
-                  McAfee
-                </span>
+
+              {/* Footer: Tags & Action */}
+              <div className="mt-auto flex flex-wrap items-center justify-between gap-4">
+                <div className="flex gap-2 flex-wrap">
+                  <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
+                    Unity
+                  </span>
+                  <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
+                    McAfee
+                  </span>
+                </div>
+
+                <Link
+                  href="/software"
+                  className="inline-flex items-center text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors group/link shrink-0"
+                >
+                  Explore Software
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 ml-1 transition-transform group-hover/link:translate-x-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    />
+                  </svg>
+                </Link>
               </div>
             </div>
           </div>
@@ -46,7 +72,7 @@ export default function HighlightsSection() {
           {/* Hardware Card */}
           <div className="group glass-card p-8 rounded-3xl hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden bg-white">
             <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-            <div className="relative z-10">
+            <div className="relative z-10 flex flex-col h-full">
               <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -75,13 +101,38 @@ export default function HighlightsSection() {
               <p className="text-slate-500 mb-8 leading-relaxed">
                 Commercial dashcams, GPS tracking, and safety sensors.
               </p>
-              <div className="flex gap-2 flex-wrap mb-8">
-                <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
-                  Dashcams
-                </span>
-                <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
-                  GPS
-                </span>
+
+              {/* Footer: Tags & Action */}
+              <div className="mt-auto flex flex-wrap items-center justify-between gap-4">
+                <div className="flex gap-2 flex-wrap">
+                  <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
+                    Dashcams
+                  </span>
+                  <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
+                    GPS
+                  </span>
+                </div>
+
+                <Link
+                  href="/hardware"
+                  className="inline-flex items-center text-sm font-bold text-emerald-600 hover:text-emerald-700 transition-colors group/link shrink-0"
+                >
+                  Explore Hardware
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 ml-1 transition-transform group-hover/link:translate-x-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    />
+                  </svg>
+                </Link>
               </div>
             </div>
           </div>
