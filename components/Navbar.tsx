@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useCart } from "../context/CartContext";
 
-interface NavbarProps {
-  cartCount: number;
-  onOpenCart: () => void;
-}
+export default function Navbar() {
+  const { cart, setIsCartOpen } = useCart();
 
-export default function Navbar({ cartCount, onOpenCart }: NavbarProps) {
+  const cartCount = cart.length;
+
   return (
     <nav className="fixed w-full z-50 glass-panel">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -85,7 +85,7 @@ export default function Navbar({ cartCount, onOpenCart }: NavbarProps) {
             </Link>
 
             <button
-              onClick={onOpenCart}
+              onClick={() => setIsCartOpen(true)}
               className="relative p-2 text-slate-600 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg"
               aria-label={`View cart, ${cartCount} items`}
             >

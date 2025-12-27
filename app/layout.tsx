@@ -3,6 +3,9 @@ import type { Metadata } from "next";
 import { Toaster } from "sonner";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 
+import { CartProvider } from "../context/CartContext";
+import GlobalCart from "../components/GlobalCart";
+
 // Font: Inter (Body)
 const inter = Inter({
   subsets: ["latin"],
@@ -30,7 +33,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${jakarta.variable}`}>
       <body className="bg-slate-50 text-slate-600 font-sans antialiased selection:bg-brand-blue selection:text-white">
-        {children}
+        <CartProvider>
+          {children}
+          <GlobalCart />
+        </CartProvider>
         <Toaster position="top-right" richColors />
       </body>
     </html>

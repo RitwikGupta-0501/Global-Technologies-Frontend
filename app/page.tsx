@@ -1,16 +1,12 @@
 "use client";
 
-import React, { useState, useMemo, useCallback } from "react";
+import { useState } from "react";
 import Navbar from "../components/Navbar";
 import { Product } from "../components/ProductCard";
 import HeroSection from "../components/home/HeroSection";
 import HighlightsSection from "../components/home/HighlightsSection";
-import CartSidebar from "../components/home/CartSidebar";
 import ProductGrid from "../components/home/ProductGrid";
-
-interface CartItem extends Product {
-  qty: number;
-}
+import { useCart } from "../context/CartContext";
 
 export default function Home() {
   // --- 1. Mock Data ---
@@ -63,111 +59,15 @@ export default function Home() {
   ]);
 
   // --- 2. State Management ---
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [checkoutStep, setCheckoutStep] = useState<
-    "cart" | "decision" | "form" | "success"
-  >("cart");
-  const [checkoutMode, setCheckoutMode] = useState<"combined" | "split">(
-    "combined",
-  );
-
-  // --- 3. Derived values ---
-  const cartTotal = useMemo(
-    () =>
-      cart.reduce(
-        (sum, item) =>
-          item.priceType === "fixed" && item.price != null
-            ? sum + item.price * item.qty
-            : sum,
-        0,
-      ),
-    [cart],
-  );
-
-  const quoteItemsCount = useMemo(
-    () => cart.filter((item) => item.priceType === "quote").length,
-    [cart],
-  );
-
-  const fixedItemsCount = useMemo(
-    () => cart.filter((item) => item.priceType === "fixed").length,
-    [cart],
-  );
-
-  const formatPrice = useCallback((price: number | null): string => {
-    return price != null && Number.isFinite(price)
-      ? `$${price.toFixed(2)}`
-      : "$0.00";
-  }, []);
-
-  // --- 4. Handlers ---
-  const addToCart = useCallback((product: Product) => {
-    setCart((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.id === product.id ? { ...item, qty: item.qty + 1 } : item,
-        );
-      }
-      return [...prev, { ...product, qty: 1 }];
-    });
-  }, []);
-
-  const removeFromCart = useCallback((id: number) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
-  }, []);
-
-  const updateQty = useCallback((id: number, delta: number) => {
-    setCart((prev) =>
-      prev
-        .map((item) =>
-          item.id === id ? { ...item, qty: item.qty + delta } : item,
-        )
-        .filter((item) => item.qty > 0),
-    );
-  }, []);
-
-  // after updateQty
-  const incrementQty = useCallback(
-    (id: number) => updateQty(id, 1),
-    [updateQty],
-  );
-
-  const decrementQty = useCallback(
-    (id: number) => updateQty(id, -1),
-    [updateQty],
-  );
-
-  const handleProceed = useCallback(() => {
-    if (fixedItemsCount > 0 && quoteItemsCount > 0) {
-      setCheckoutStep("decision");
-    } else {
-      setCheckoutMode(fixedItemsCount > 0 ? "split" : "combined");
-      setCheckoutStep("form");
-    }
-  }, [fixedItemsCount, quoteItemsCount]);
-
-  const handleFormSubmit = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    setCheckoutStep("success");
-  }, []);
-
-  const resetCart = useCallback(() => {
-    setCart([]);
-    setIsCartOpen(false);
-    setCheckoutStep("cart");
-    setCheckoutMode("combined");
-  }, []);
+  const { cart, addToCart, incrementQty, decrementQty } = useCart();
 
   return (
     <main className="min-h-screen bg-slate-50 font-sans">
-      <Navbar cartCount={cart.length} onOpenCart={() => setIsCartOpen(true)} />
+      <Navbar />
 
       <HeroSection />
       <HighlightsSection />
 
-      {/* Product grid still uses ProductCard; wrapped in its own component */}
       <ProductGrid
         products={products}
         cart={cart}
@@ -187,26 +87,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-
-      {/* Cart Sidebar */}
-      <CartSidebar
-        cart={cart}
-        isCartOpen={isCartOpen}
-        checkoutStep={checkoutStep}
-        checkoutMode={checkoutMode}
-        cartTotal={cartTotal}
-        fixedItemsCount={fixedItemsCount}
-        quoteItemsCount={quoteItemsCount}
-        formatPrice={formatPrice}
-        onClose={() => setIsCartOpen(false)}
-        onReset={resetCart}
-        onProceed={handleProceed}
-        onUpdateQty={updateQty}
-        onRemove={removeFromCart}
-        onSetStep={setCheckoutStep}
-        onSetMode={setCheckoutMode}
-        onSubmitForm={handleFormSubmit}
-      />
     </main>
   );
 }
