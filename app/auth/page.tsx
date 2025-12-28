@@ -118,7 +118,7 @@ export default function AuthPage() {
   return (
     <main className="min-h-screen bg-slate-50 font-sans relative overflow-hidden">
       {/* Reusing Navbar for consistency */}
-      <Navbar cartCount={0} onOpenCart={() => {}} />
+      <Navbar />
 
       {/* Background Decor (Matching Home Theme) */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] pointer-events-none z-0">
