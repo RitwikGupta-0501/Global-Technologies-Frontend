@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Navbar from "../../../components/Navbar"; // Adjusted path to reach root components
 import {
@@ -99,6 +99,14 @@ export default function ProductDetailPage({
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<"features" | "specs">("features");
 
+  // Zoom state
+  const [showZoom, setShowZoom] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+
+  // Ref for the interval to clear/reset it
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
   // Determine which product to show based on URL param. Default to ID 1 if not found.
   const product = PRODUCTS[id] || PRODUCTS["1"];
 
@@ -106,15 +114,37 @@ export default function ProductDetailPage({
   const isQuote = product.isQuote;
 
   // Auto-cycle images every 5 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
+  const startImageCycle = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
       setSelectedImage((prev) => (prev + 1) % product.images.length);
     }, 5000);
-    return () => clearInterval(interval);
+  };
+
+  useEffect(() => {
+    startImageCycle();
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
   }, [product.images.length]);
+
+  const handleManualImageSelect = (idx: number) => {
+    setSelectedImage(idx);
+    startImageCycle(); // Reset the timer on manual interaction
+  };
 
   const handleQuantity = (delta: number) => {
     setQuantity((prev) => Math.max(1, prev + delta));
+  };
+
+  // Zoom Handlers
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!imageContainerRef.current) return;
+    const { left, top, width, height } =
+      imageContainerRef.current.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setMousePosition({ x, y });
   };
 
   return (
@@ -144,27 +174,54 @@ export default function ProductDetailPage({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           {/* LEFT COLUMN: Image Gallery */}
           <div className="space-y-4">
-            {/* Main Image */}
-            <div className="aspect-square bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden relative group">
-              {/* Used a key to force re-render for smooth fade transition when index changes */}
+            {/* Main Image Container */}
+            <div
+              ref={imageContainerRef}
+              className="aspect-square bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden relative group cursor-crosshair"
+              onMouseEnter={() => setShowZoom(true)}
+              onMouseLeave={() => setShowZoom(false)}
+              onMouseMove={handleMouseMove}
+            >
+              {/* Base Image */}
               <img
                 key={selectedImage}
                 src={product.images[selectedImage]}
                 alt={product.name}
                 className="w-full h-full object-cover object-center animate-in fade-in duration-700"
               />
-              {/* Type Badge */}
-              <div className="absolute top-4 left-4">
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
-                    product.type === "Software"
-                      ? "bg-blue-100 text-blue-700"
-                      : "bg-emerald-100 text-emerald-700"
-                  }`}
-                >
-                  {product.type}
-                </span>
-              </div>
+
+              {/* Zoom Lens / Preview Box */}
+              {showZoom && (
+                <div
+                  className="absolute pointer-events-none border-2 border-slate-400/50 bg-white/10 backdrop-blur-none shadow-2xl rounded-xl"
+                  style={{
+                    width: "150px",
+                    height: "150px",
+                    left: `${mousePosition.x}%`,
+                    top: `${mousePosition.y}%`,
+                    transform: "translate(-50%, -50%)",
+                    backgroundImage: `url(${product.images[selectedImage]})`,
+                    backgroundPosition: `${mousePosition.x}% ${mousePosition.y}%`,
+                    backgroundSize: "500%", // Increased Zoom level (5x)
+                    backgroundRepeat: "no-repeat",
+                  }}
+                />
+              )}
+
+              {/* Type Badge (Hidden when zooming to avoid obstruction) */}
+              {!showZoom && (
+                <div className="absolute top-4 left-4 transition-opacity duration-300">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
+                      product.type === "Software"
+                        ? "bg-blue-100 text-blue-700"
+                        : "bg-emerald-100 text-emerald-700"
+                    }`}
+                  >
+                    {product.type}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Thumbnails - Smaller Size (grid-cols-6) */}
@@ -172,7 +229,7 @@ export default function ProductDetailPage({
               {product.images.map((img: string, idx: number) => (
                 <button
                   key={idx}
-                  onClick={() => setSelectedImage(idx)}
+                  onClick={() => handleManualImageSelect(idx)}
                   className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
                     selectedImage === idx
                       ? "border-slate-900 ring-2 ring-slate-900/20"
