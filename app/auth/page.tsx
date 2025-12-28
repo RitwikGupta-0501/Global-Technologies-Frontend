@@ -10,6 +10,7 @@ export default function AuthPage() {
   // Form State
   const [formData, setFormData] = useState({
     fullName: "",
+    companyName: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -18,6 +19,7 @@ export default function AuthPage() {
   // Error State
   const [errors, setErrors] = useState({
     fullName: "",
+    companyName: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -46,6 +48,7 @@ export default function AuthPage() {
     // Clear errors when switching modes
     setErrors({
       fullName: "",
+      companyName: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -57,6 +60,7 @@ export default function AuthPage() {
     let isValid = true;
     const newErrors = {
       fullName: "",
+      companyName: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -87,6 +91,8 @@ export default function AuthPage() {
         isValid = false;
       }
 
+      // Company Name is now optional - Validation removed
+
       // Confirm Password Validation (Signup only)
       if (formData.confirmPassword !== formData.password) {
         newErrors.confirmPassword = "Passwords do not match";
@@ -112,10 +118,10 @@ export default function AuthPage() {
   return (
     <main className="min-h-screen bg-slate-50 font-sans relative overflow-hidden">
       {/* Reusing Navbar for consistency */}
-      <Navbar />
+      <Navbar cartCount={0} onOpenCart={() => {}} />
 
       {/* Background Decor (Matching Home Theme) */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-200 pointer-events-none z-0">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] pointer-events-none z-0">
         <div className="absolute top-20 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl mix-blend-multiply animate-blob" />
         <div className="absolute top-20 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl mix-blend-multiply animate-blob animation-delay-2000" />
       </div>
@@ -136,14 +142,14 @@ export default function AuthPage() {
               </p>
 
               {/* Toggle Switch */}
-              <div className="bg-slate-100/80 p-1 rounded-xl flex items-center justify-between mb-8">
+              <div className="bg-slate-100/80 p-1 rounded-xl flex items-center justify-between mb-8 cursor-pointer">
                 <button
                   onClick={() => handleToggle(true)}
                   type="button"
-                  className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-300 ${
+                  className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-300 cursor-pointer ${
                     isLogin
                       ? "bg-white text-slate-900 shadow-sm"
-                      : "text-slate-500 hover:text-slate-700"
+                      : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50"
                   }`}
                 >
                   Sign In
@@ -151,10 +157,10 @@ export default function AuthPage() {
                 <button
                   onClick={() => handleToggle(false)}
                   type="button"
-                  className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-300 ${
+                  className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-300 cursor-pointer ${
                     !isLogin
                       ? "bg-white text-slate-900 shadow-sm"
-                      : "text-slate-500 hover:text-slate-700"
+                      : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50"
                   }`}
                 >
                   Sign Up
@@ -165,28 +171,48 @@ export default function AuthPage() {
             {/* Form */}
             <form onSubmit={handleSubmit} className="px-8 pb-8 space-y-5">
               {!isLogin && (
-                <div className="space-y-1.5 animate-in fade-in slide-in-from-top-4 duration-300">
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    name="fullName"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    placeholder="John Doe"
-                    className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-all ${
-                      errors.fullName
-                        ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
-                        : "border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
-                    }`}
-                  />
-                  {errors.fullName && (
-                    <p className="text-xs text-red-500 ml-1">
-                      {errors.fullName}
-                    </p>
-                  )}
-                </div>
+                <>
+                  <div className="space-y-1.5 animate-in fade-in slide-in-from-top-4 duration-300">
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      name="fullName"
+                      value={formData.fullName}
+                      onChange={handleChange}
+                      placeholder="John Doe"
+                      className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-all ${
+                        errors.fullName
+                          ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
+                          : "border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+                      }`}
+                    />
+                    {errors.fullName && (
+                      <p className="text-xs text-red-500 ml-1">
+                        {errors.fullName}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Company Name Field - Optional */}
+                  <div className="space-y-1.5 animate-in fade-in slide-in-from-top-4 duration-300">
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">
+                      Company Name{" "}
+                      <span className="text-slate-400 font-normal lowercase ml-1">
+                        (Optional)
+                      </span>
+                    </label>
+                    <input
+                      type="text"
+                      name="companyName"
+                      value={formData.companyName}
+                      onChange={handleChange}
+                      placeholder="Acme Corp"
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    />
+                  </div>
+                </>
               )}
 
               <div className="space-y-1.5">
@@ -269,7 +295,7 @@ export default function AuthPage() {
 
               <button
                 type="submit"
-                className="w-full py-3.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-lg shadow-slate-900/20 hover:shadow-slate-900/30 transform hover:-translate-y-0.5 transition-all duration-200 mt-4"
+                className="w-full py-3.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-lg shadow-slate-900/20 hover:shadow-slate-900/30 transform hover:-translate-y-0.5 transition-all duration-200 mt-4 cursor-pointer"
               >
                 {isLogin ? "Sign In" : "Create Account"}
               </button>

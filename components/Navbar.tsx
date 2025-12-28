@@ -86,7 +86,7 @@ export default function Navbar() {
 
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 text-slate-600 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg"
+              className="relative p-2 text-slate-600 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg cursor-pointer"
               aria-label={`View cart, ${cartCount} items`}
             >
               <svg
