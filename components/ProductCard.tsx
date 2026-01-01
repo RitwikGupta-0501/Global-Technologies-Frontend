@@ -4,8 +4,8 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { Plus, Phone } from "lucide-react";
-import { ProductSchema } from "../src/api/models/ProductSchema"; // Adjust path
-import { useCart } from "@/context/CartContext";
+import { ProductSchema } from "@/api/models/ProductSchema"; // Adjust path
+import { useCart } from "~/context/CartContext";
 
 interface ProductProps {
   product: ProductSchema;

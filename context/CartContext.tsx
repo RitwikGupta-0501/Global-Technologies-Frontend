@@ -6,8 +6,12 @@ import React, {
   useState,
   useMemo,
   useCallback,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+  useLayoutEffect,
 } from "react";
-import { ProductSchema } from "../src/api/models/ProductSchema";
+import { ProductSchema } from "@/api/models/ProductSchema";
 
 // Define the shape of your context
 interface CartItem extends ProductSchema {
@@ -23,7 +27,7 @@ interface CartContextType {
   quoteItemsCount: number;
   checkoutStep: "cart" | "decision" | "form" | "success";
   checkoutMode: "combined" | "split";
-  addToCart: (product: ProductSchema) => void;
+  addToCart: (product: ProductSchema, qty: number) => void;
   removeFromCart: (id: number) => void;
   incrementQty: (id: number) => void; // Helper for simple increment
   decrementQty: (id: number) => void; // Helper for simple decrement
@@ -37,9 +41,42 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+function useLocalStorageCart(
+  defaultValue: CartItem[] = [],
+): [CartItem[], Dispatch<SetStateAction<CartItem[]>>] {
+  const [cart, setCart] = useState<CartItem[]>(defaultValue);
+
+  useLayoutEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("cart");
+        if (saved) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
+          setCart(JSON.parse(saved));
+        }
+      } catch {
+        console.warn("Failed to load cart from localStorage");
+      }
+    }
+  }, []);
+
+  // Auto-save unchanged
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("cart", JSON.stringify(cart));
+      } catch (error) {
+        console.error("Failed to save cart:", error);
+      }
+    }
+  }, [cart]);
+
+  return [cart, setCart];
+}
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
   // --- State ---
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useLocalStorageCart([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState<
     "cart" | "decision" | "form" | "success"
@@ -47,6 +84,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [checkoutMode, setCheckoutMode] = useState<"combined" | "split">(
     "combined",
   );
+
+  // Multi-tab sync
+  useEffect(() => {
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === "cart") {
+        try {
+          setCart(JSON.parse(e.newValue || "[]"));
+        } catch {
+          console.warn("Failed to sync cart from storage event");
+        }
+      }
+    };
+    if (typeof window !== "undefined") {
+      window.addEventListener("storage", handleStorage);
+      return () => window.removeEventListener("storage", handleStorage);
+    }
+  }, [setCart]);
 
   // --- Cart Logic ---
   const cartTotal = useMemo(
@@ -82,32 +136,40 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
-  const addToCart = useCallback((product: ProductSchema) => {
-    setCart((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.id === product.id ? { ...item, qty: item.qty + 1 } : item,
-        );
-      }
-      return [...prev, { ...product, qty: 1 }];
-    });
-    // setIsCartOpen(true); // Uncomment to Auto-open cart on add
-  }, []);
+  const addToCart = useCallback(
+    (product: ProductSchema, qty: number = 1) => {
+      setCart((prev) => {
+        const existing = prev.find((item) => item.id === product.id);
+        if (existing) {
+          return prev.map((item) =>
+            item.id === product.id ? { ...item, qty: item.qty + qty } : item,
+          );
+        }
+        return [...prev, { ...product, qty }];
+      });
+    },
+    [setCart],
+  );
 
-  const removeFromCart = useCallback((id: number) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
-  }, []);
+  const removeFromCart = useCallback(
+    (id: number) => {
+      setCart((prev) => prev.filter((item) => item.id !== id));
+    },
+    [setCart],
+  );
 
-  const updateQty = useCallback((id: number, delta: number) => {
-    setCart((prev) =>
-      prev
-        .map((item) =>
-          item.id === id ? { ...item, qty: item.qty + delta } : item,
-        )
-        .filter((item) => item.qty > 0),
-    );
-  }, []);
+  const updateQty = useCallback(
+    (id: number, delta: number) => {
+      setCart((prev) =>
+        prev
+          .map((item) =>
+            item.id === id ? { ...item, qty: item.qty + delta } : item,
+          )
+          .filter((item) => item.qty > 0),
+      );
+    },
+    [setCart],
+  );
 
   // Simple helpers for the UI
   const incrementQty = useCallback(
@@ -133,7 +195,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setIsCartOpen(false);
     setCheckoutStep("cart");
     setCheckoutMode("combined");
-  }, []);
+  }, [setCart]);
 
   return (
     <CartContext.Provider

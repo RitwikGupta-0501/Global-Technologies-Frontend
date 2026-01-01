@@ -3,10 +3,10 @@ import type { Metadata } from "next";
 import { Toaster } from "sonner";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 
-import { CartProvider } from "../context/CartContext";
-import GlobalCart from "../components/GlobalCart";
+import { CartProvider } from "~/context/CartContext";
+import GlobalCart from "~/components/GlobalCart";
 
-import { OpenAPI } from "../src/api/core/OpenAPI";
+import { OpenAPI } from "@/api/core/OpenAPI";
 OpenAPI.BASE = "http://127.0.0.1:8000";
 
 // Font: Inter (Body)

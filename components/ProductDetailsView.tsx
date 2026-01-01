@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useCart } from "../context/CartContext";
-import { ProductSchema } from "../src/api/models/ProductSchema";
+import { ProductSchema } from "@/api/models/ProductSchema";
+import { getImageUrl } from "@/lib/utils";
 import {
   Star,
   Check,
@@ -17,24 +18,16 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import Image from "next/image";
+import { toast } from "sonner";
 
 interface ProductDetailsViewProps {
   product: ProductSchema;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
-
-const getImageUrl = (path: string) => {
-  if (!path) return "/placeholder.png";
-  if (path.startsWith("http")) return path; // Already a full URL (e.g. S3)
-  return `${API_URL}${path}`; // Prepend Django Backend URL
-};
-
 export default function ProductDetailsView({
   product,
 }: ProductDetailsViewProps) {
   const [selectedImage, setSelectedImage] = useState(0);
-  const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<"features" | "specs">("features");
 
   // Zoom state
@@ -43,10 +36,15 @@ export default function ProductDetailsView({
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
   // Cart Context
-  const { addToCart } = useCart();
+  const { cart, addToCart } = useCart();
 
   // Ref for the interval
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Global Cart Sync
+  const cartItem = cart.find((item) => item.id === product.id);
+  const [localQuantity, setLocalQuantity] = useState(1);
+  const syncedQuantity = cartItem ? cartItem.qty : localQuantity;
 
   // --- DATA MAPPING (Bridge API -> UI) ---
   const isQuote = product.price_type === "quote";
@@ -81,24 +79,21 @@ export default function ProductDetailsView({
   };
 
   const handleQuantity = (delta: number) => {
-    setQuantity((prev) => Math.max(1, prev + delta));
+    const newQty = Math.max(1, syncedQuantity + delta);
+    setLocalQuantity(newQty);
+
+    // Sync with cart (handles both add + update)
+    if (cartItem) {
+      // Update existing cart item
+      addToCart(product, newQty - cartItem.qty); // Delta update
+    }
   };
 
   const handleAddToCart = () => {
-    addToCart({
-      id: product.id,
-      name: product.name,
-      // 1. Map API 'description' to Frontend 'desc'
-      desc: product.description,
-      price: priceNumber,
-      // 2. Logic for Color (Blue/Green)
-      color: product.category === "Software" ? "blue" : "green",
-      type: product.category,
-      // 3. Logic for Price Label & Type
-      priceLabel: priceLabel,
-      priceType: isQuote ? "quote" : "fixed",
-      // 4. CRITICAL: Send the full array, not just one string
-      images: product.images.map(getImageUrl),
+    addToCart(product, syncedQuantity);
+    toast.success("Added to cart!", {
+      description: `${product.name} × ${syncedQuantity}`,
+      duration: 3000,
     });
   };
 
@@ -117,9 +112,6 @@ export default function ProductDetailsView({
 
   return (
     <main className="min-h-screen bg-slate-50 font-sans relative overflow-hidden">
-      {/* Assuming Navbar is handled in layout, but if you want it here: */}
-      {/* <Navbar /> */}
-
       {/* Background Decor */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-200 pointer-events-none z-0">
         <div className="absolute top-20 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl mix-blend-multiply animate-blob" />
@@ -258,8 +250,8 @@ export default function ProductDetailsView({
                     </div>
                   ) : (
                     <div className="text-4xl font-bold text-slate-900">
-                      ${(priceNumber * quantity).toLocaleString()}
-                      {quantity > 1 && (
+                      ${(priceNumber * syncedQuantity).toLocaleString()}
+                      {syncedQuantity > 1 && (
                         <span className="text-lg text-slate-400 font-normal ml-2">
                           (${priceNumber.toLocaleString()} ea)
                         </span>
@@ -276,12 +268,12 @@ export default function ProductDetailsView({
                     <button
                       onClick={() => handleQuantity(-1)}
                       className="w-10 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors"
-                      disabled={quantity <= 1}
+                      disabled={syncedQuantity <= 1}
                     >
                       <Minus className="w-4 h-4" />
                     </button>
                     <span className="w-12 text-center font-bold text-slate-900 text-lg">
-                      {quantity}
+                      {syncedQuantity}
                     </span>
                     <button
                       onClick={() => handleQuantity(1)}
@@ -308,7 +300,8 @@ export default function ProductDetailsView({
                     </>
                   ) : (
                     <>
-                      Add to Cart — ${(priceNumber * quantity).toLocaleString()}
+                      Add to Cart — $
+                      {(priceNumber * syncedQuantity).toLocaleString()}
                     </>
                   )}
                 </button>

@@ -15,9 +15,9 @@ import {
   MessageSquare,
   ArrowRight,
 } from "lucide-react";
-import { Product } from "../ProductCard";
+import { ProductSchema } from "../../src/api/models/ProductSchema";
 
-export interface CartItem extends Product {
+export interface CartItem extends ProductSchema {
   qty: number;
 }
 
@@ -352,9 +352,9 @@ export default function CartSidebar({
                             <Plus size={12} />
                           </button>
                         </div>
-                        {item.priceType === "fixed" && item.price != null ? (
+                        {item.price_type === "fixed" && item.price != null ? (
                           <span className="font-bold text-slate-900">
-                            {formatPrice(item.price * item.qty)}
+                            {formatPrice(Number(item.price) * item.qty)}
                           </span>
                         ) : (
                           <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded">

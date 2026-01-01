@@ -1,9 +1,8 @@
 import Navbar from "../components/Navbar";
-import { Product } from "../components/ProductCard";
+import { ProductSchema } from "@/api/models/ProductSchema";
 import HeroSection from "../components/home/HeroSection";
 import HighlightsSection from "../components/home/HighlightsSection";
 import ProductGrid from "../components/home/ProductGrid";
-import { useCart } from "../context/CartContext";
 
 async function getProducts() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/`, {
@@ -16,7 +15,7 @@ async function getProducts() {
     return [];
   }
 
-  return res.json() as Promise<Product[]>;
+  return res.json() as Promise<ProductSchema[]>;
 }
 
 export default async function Home() {
