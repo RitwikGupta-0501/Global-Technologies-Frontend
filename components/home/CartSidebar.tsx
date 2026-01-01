@@ -16,6 +16,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { ProductSchema } from "../../src/api/models/ProductSchema";
+import { getImageUrl } from "@/lib/utils";
 
 export interface CartItem extends ProductSchema {
   qty: number;
@@ -312,7 +313,7 @@ export default function CartSidebar({
                   >
                     <div className="w-16 h-16 bg-white rounded-lg shrink-0 flex items-center justify-center border border-slate-200 overflow-hidden">
                       <Image
-                        src={item.images[0]}
+                        src={getImageUrl(item.images[0])}
                         alt={item.name}
                         width={64}
                         height={64}

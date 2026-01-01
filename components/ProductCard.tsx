@@ -4,7 +4,8 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { Plus, Phone } from "lucide-react";
-import { ProductSchema } from "@/api/models/ProductSchema"; // Adjust path
+import { ProductSchema } from "@/api/models/ProductSchema";
+import { getImageUrl } from "@/lib/utils";
 import { useCart } from "~/context/CartContext";
 
 interface ProductProps {
@@ -125,7 +126,7 @@ export default function ProductCard({ product }: ProductProps) {
         {product.images.map((img, idx) => (
           <Image
             key={idx}
-            src={img}
+            src={getImageUrl(img)}
             alt={`${product.name} View ${idx + 1}`}
             fill
             className={`object-cover transition-opacity duration-700 ease-in-out ${
