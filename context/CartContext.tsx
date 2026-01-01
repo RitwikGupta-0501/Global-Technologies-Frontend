@@ -27,7 +27,7 @@ interface CartContextType {
   quoteItemsCount: number;
   checkoutStep: "cart" | "decision" | "form" | "success";
   checkoutMode: "combined" | "split";
-  addToCart: (product: ProductSchema, qty: number) => void;
+  addToCart: (product: ProductSchema, qty?: number) => void;
   removeFromCart: (id: number) => void;
   incrementQty: (id: number) => void; // Helper for simple increment
   decrementQty: (id: number) => void; // Helper for simple decrement
