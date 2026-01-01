@@ -135,45 +135,97 @@ export default function ProductDetailsView({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           {/* LEFT COLUMN: Image Gallery */}
           <div className="space-y-4">
-            {/* Main Image Container */}
-            <div
-              ref={imageContainerRef}
-              className="aspect-square bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden relative group cursor-crosshair"
-              onMouseEnter={() => setShowZoom(true)}
-              onMouseLeave={() => setShowZoom(false)}
-              onMouseMove={handleMouseMove}
-            >
-              {/* Base Image */}
-              <Image
-                key={selectedImage}
-                src={getImageUrl(mainImage)}
-                alt={product.name}
-                fill
-                className="object-contain p-8 animate-in fade-in duration-700"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-
-              {/* Zoom Lens / Preview Box */}
-              {showZoom && (
+            {product.images?.length ? (
+              // Your existing zoom + thumbnails (100% unchanged)
+              <>
+                {/* Main Image Container */}
                 <div
-                  className="absolute pointer-events-none border-2 border-slate-400/50 bg-white/10 backdrop-blur-none shadow-2xl rounded-xl"
-                  style={{
-                    width: "150px",
-                    height: "150px",
-                    left: `${mousePosition.x}%`,
-                    top: `${mousePosition.y}%`,
-                    transform: "translate(-50%, -50%)",
-                    backgroundImage: `url(${getImageUrl(mainImage)})`,
-                    backgroundPosition: `${mousePosition.x}% ${mousePosition.y}%`,
-                    backgroundSize: "500%", // Increased Zoom level (5x)
-                    backgroundRepeat: "no-repeat",
-                  }}
-                />
-              )}
+                  ref={imageContainerRef}
+                  className="aspect-square bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden relative group cursor-crosshair"
+                  onMouseEnter={() => setShowZoom(true)}
+                  onMouseLeave={() => setShowZoom(false)}
+                  onMouseMove={handleMouseMove}
+                >
+                  {/* Base Image */}
+                  <Image
+                    key={selectedImage}
+                    src={getImageUrl(mainImage)}
+                    alt={product.name}
+                    fill
+                    className="object-contain p-8 animate-in fade-in duration-700"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
 
-              {/* Type Badge (Hidden when zooming) */}
-              {!showZoom && (
-                <div className="absolute top-4 left-4 transition-opacity duration-300">
+                  {/* Zoom Lens / Preview Box */}
+                  {showZoom && (
+                    <div
+                      className="absolute pointer-events-none border-2 border-slate-400/50 bg-white/10 backdrop-blur-none shadow-2xl rounded-xl"
+                      style={{
+                        width: "150px",
+                        height: "150px",
+                        left: `${mousePosition.x}%`,
+                        top: `${mousePosition.y}%`,
+                        transform: "translate(-50%, -50%)",
+                        backgroundImage: `url(${getImageUrl(mainImage)})`,
+                        backgroundPosition: `${mousePosition.x}% ${mousePosition.y}%`,
+                        backgroundSize: "500%", // Increased Zoom level (5x)
+                        backgroundRepeat: "no-repeat",
+                      }}
+                    />
+                  )}
+
+                  {/* Type Badge (Hidden when zooming) */}
+                  {!showZoom && (
+                    <div className="absolute top-4 left-4 transition-opacity duration-300">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
+                          product.category === "Software"
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-emerald-100 text-emerald-700"
+                        }`}
+                      >
+                        {product.category}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Thumbnails */}
+                <div className="grid grid-cols-6 gap-2">
+                  {product.images.map((img: string, idx: number) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleManualImageSelect(idx)}
+                      className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                        selectedImage === idx
+                          ? "border-slate-900 ring-2 ring-slate-900/20"
+                          : "border-transparent hover:border-slate-300"
+                      }`}
+                    >
+                      <Image
+                        src={getImageUrl(img)}
+                        alt={`View ${idx}`}
+                        className="object-cover"
+                        fill
+                        sizes="100px"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : (
+              // SVG Placeholder - matches aspect-square/rounded-3xl styling
+              <div className="aspect-square bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 flex items-center justify-center p-8">
+                <Image
+                  src="/placeholder.svg"
+                  alt="No image available"
+                  width={512}
+                  height={512}
+                  className="object-contain"
+                  sizes="128px"
+                />
+                {/* Category badge preserved */}
+                <div className="absolute top-4 left-4">
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
                       product.category === "Software"
@@ -184,31 +236,8 @@ export default function ProductDetailsView({
                     {product.category}
                   </span>
                 </div>
-              )}
-            </div>
-
-            {/* Thumbnails */}
-            <div className="grid grid-cols-6 gap-2">
-              {product.images.map((img: string, idx: number) => (
-                <button
-                  key={idx}
-                  onClick={() => handleManualImageSelect(idx)}
-                  className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                    selectedImage === idx
-                      ? "border-slate-900 ring-2 ring-slate-900/20"
-                      : "border-transparent hover:border-slate-300"
-                  }`}
-                >
-                  <Image
-                    src={getImageUrl(img)}
-                    alt={`View ${idx}`}
-                    className="object-cover"
-                    fill
-                    sizes="100px"
-                  />
-                </button>
-              ))}
-            </div>
+              </div>
+            )}
           </div>
 
           {/* RIGHT COLUMN: Product Info */}

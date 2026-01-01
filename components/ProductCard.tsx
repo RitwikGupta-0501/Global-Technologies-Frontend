@@ -121,37 +121,63 @@ export default function ProductCard({ product }: ProductProps) {
           </svg>
         </button>
       </div>
-      {/* Image Area - Perfect as-is */}
+      {/* Image Area - Perfect as-is + Placeholder */}
       <div className="mb-6 relative w-full h-48 bg-slate-50 rounded-2xl overflow-hidden shadow-inner group-hover:shadow-md transition-all">
-        {product.images.map((img, idx) => (
-          <Image
-            key={idx}
-            src={getImageUrl(img)}
-            alt={`${product.name} View ${idx + 1}`}
-            fill
-            className={`object-cover transition-opacity duration-700 ease-in-out ${
-              idx === currentImageIndex ? "opacity-100" : "opacity-0"
-            }`}
-            sizes="(max-width: 768px) 100vw, 33vw"
-          />
-        ))}
-        {product.images.length > 1 && (
-          <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-            {product.images.map((_, idx) => (
-              <div
+        {product.images?.length ? (
+          // Your existing carousel (unchanged)
+          <>
+            {product.images.map((img, idx) => (
+              <Image
                 key={idx}
-                className={`h-1 rounded-full transition-all duration-300 ${
-                  idx === currentImageIndex
-                    ? productColor === "blue"
-                      ? "w-4 bg-blue-600"
-                      : "w-4 bg-emerald-600"
-                    : "w-1 bg-slate-300"
+                src={getImageUrl(img)}
+                alt={`${product.name} View ${idx + 1}`}
+                fill
+                className={`object-cover transition-opacity duration-700 ease-in-out ${
+                  idx === currentImageIndex ? "opacity-100" : "opacity-0"
                 }`}
+                sizes="(max-width: 768px) 100vw, 33vw"
               />
             ))}
-          </div>
+            {product.images.length > 1 && (
+              <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                {product.images.map((_, idx) => (
+                  <div
+                    key={idx}
+                    className={`h-1 rounded-full transition-all duration-300 ${
+                      idx === currentImageIndex
+                        ? productColor === "blue"
+                          ? "w-4 bg-blue-600"
+                          : "w-4 bg-emerald-600"
+                        : "w-1 bg-slate-300"
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          // SVG Placeholder - matches your bg-slate-50/rounded-2xl style
+          <Image
+            src={
+              product.images?.length
+                ? getImageUrl(product.images[currentImageIndex])
+                : "/placeholder.svg"
+            }
+            alt={
+              product.images?.length
+                ? `${product.name} View ${currentImageIndex + 1}`
+                : "No image"
+            }
+            fill
+            className="object-cover" // SVG uses object-contain via conditional class
+            onError={(e) => {
+              // Ultimate fallback: show inline SVG or solid color
+              e.currentTarget.src = "/placeholder.svg"; // Retry SVG
+            }}
+          />
         )}
       </div>
+
       {/* Product Details */}
       <h3 className="font-bold text-lg text-slate-900 mb-1">{product.name}</h3>
       <p className="text-sm text-slate-500 mb-4 line-clamp-2">
