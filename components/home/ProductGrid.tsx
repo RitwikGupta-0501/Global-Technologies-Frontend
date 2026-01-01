@@ -2,23 +2,14 @@
 "use client";
 
 import ProductCard, { Product } from "../ProductCard";
-import { CartItem } from "./CartSidebar";
+import { useCart } from "../../context/CartContext";
 
 interface ProductGridProps {
   products: Product[];
-  cart: CartItem[]; // import CartItem type or re‑declare
-  onAddToCart: (product: Product) => void;
-  onIncrement: (productId: number) => void;
-  onDecrement: (productId: number) => void;
 }
 
-export default function ProductGrid({
-  products,
-  cart,
-  onAddToCart,
-  onIncrement,
-  onDecrement,
-}: ProductGridProps) {
+export default function ProductGrid({ products }: ProductGridProps) {
+  const { cart, addToCart, incrementQty, decrementQty } = useCart();
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
       <div className="flex flex-col lg:flex-row gap-12">
@@ -92,9 +83,9 @@ export default function ProductGrid({
                   key={product.id}
                   product={product}
                   currentQty={currentQty}
-                  onAddToCart={onAddToCart}
-                  onIncrement={onIncrement}
-                  onDecrement={onDecrement}
+                  onAddToCart={() => addToCart(product)}
+                  onIncrement={() => incrementQty(product.id)}
+                  onDecrement={() => decrementQty(product.id)}
                 />
               );
             })}

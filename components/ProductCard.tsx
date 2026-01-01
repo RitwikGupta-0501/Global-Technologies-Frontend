@@ -4,39 +4,25 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { Plus, Phone } from "lucide-react";
-
-export interface Product {
-  id: number;
-  name: string;
-  desc: string;
-  price: number | null;
-  type: string;
-  color: "blue" | "green";
-  priceLabel: string;
-  priceType: "fixed" | "quote";
-  images: string[];
-}
+import { ProductSchema } from "../src/api/models/ProductSchema"; // Adjust path
+import { useCart } from "@/context/CartContext";
 
 interface ProductProps {
-  product: Product;
-  currentQty: number;
-  onAddToCart: (product: Product) => void;
-  onIncrement: (productId: number) => void;
-  onDecrement: (productId: number) => void;
+  product: ProductSchema;
 }
 
-export default function ProductCard({
-  product,
-  currentQty,
-  onAddToCart,
-  onIncrement,
-  onDecrement,
-}: ProductProps) {
+export default function ProductCard({ product }: ProductProps) {
+  const { cart, addToCart, incrementQty, decrementQty } = useCart();
+
+  const cartItem = cart.find((item) => item.id === product.id);
+  const currentQty = cartItem ? cartItem.qty : 0;
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const isQuote = product.priceType === "quote";
+  const isQuote = product.price_type === "quote";
   const priceNumber = product.price != null ? Number(product.price) : null;
+  const productColor = product.category === "Software" ? "blue" : "green";
 
   // Safe price formatting
   const formatPrice = useCallback(() => {
@@ -44,6 +30,25 @@ export default function ProductCard({
       ? `$${priceNumber.toFixed(2)}`
       : "Price unavailable";
   }, [priceNumber]);
+
+  const handleAddToCart = () => {
+    // Call Context Function
+    addToCart(product);
+
+    // Show Feedback
+    toast.success(`${product.name} added to cart!`, {
+      description: `Quantity: 1 • ${formatPrice()}`,
+      duration: 3000,
+    });
+  };
+
+  // TODO: Add logic for RequestQuote
+  const handleRequestQuote = () => {
+    toast("Request for quote sent", {
+      description: `For: ${product.name}`,
+      duration: 3000,
+    });
+  };
 
   // Image cycling (unchanged - perfect)
   const handleMouseEnter = useCallback(() => {
@@ -88,12 +93,12 @@ export default function ProductCard({
       <div className="flex justify-between items-start mb-6">
         <span
           className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-            product.color === "blue"
+            productColor === "blue"
               ? "bg-blue-50 text-blue-700" // ✅ Use standard Tailwind
               : "bg-emerald-50 text-emerald-700"
           }`}
         >
-          {product.type}
+          {product.category}
         </span>
         <button
           className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors z-10 relative"
@@ -136,7 +141,7 @@ export default function ProductCard({
                 key={idx}
                 className={`h-1 rounded-full transition-all duration-300 ${
                   idx === currentImageIndex
-                    ? product.color === "blue"
+                    ? productColor === "blue"
                       ? "w-4 bg-blue-600"
                       : "w-4 bg-emerald-600"
                     : "w-1 bg-slate-300"
@@ -148,7 +153,9 @@ export default function ProductCard({
       </div>
       {/* Product Details */}
       <h3 className="font-bold text-lg text-slate-900 mb-1">{product.name}</h3>
-      <p className="text-sm text-slate-500 mb-4 line-clamp-2">{product.desc}</p>
+      <p className="text-sm text-slate-500 mb-4 line-clamp-2">
+        {product.description}
+      </p>
 
       {/* Footer: Price & Action */}
       <div
@@ -161,7 +168,7 @@ export default function ProductCard({
         {/* ROW 1: THE LABEL */}
         <div>
           <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">
-            {product.priceLabel}
+            {product.type}
           </p>
         </div>
 
@@ -178,27 +185,16 @@ export default function ProductCard({
             <button
               className="px-4 py-2 rounded-full bg-slate-900 text-white text-xs font-semibold hover:bg-blue-600 transition-colors flex items-center gap-2"
               aria-label="Request quote"
-              onClick={() => {
-                toast("Request for quote sent", {
-                  description: `For: ${product.name}`,
-                  duration: 3000,
-                });
-              }}
+              onClick={handleRequestQuote}
             >
               <Phone className="w-3 h-3" />
               Request Quote
             </button>
           ) : currentQty === 0 ? (
             <button
-              onClick={() => {
-                toast.success(`${product.name} added to cart!`, {
-                  description: `Quantity: 1 • ${formatPrice()}`,
-                  duration: 3000,
-                });
-                onAddToCart(product);
-              }}
+              onClick={handleAddToCart}
               className={`w-10 h-10 rounded-full -translate-y-2 flex items-center justify-center shadow-lg hover:scale-105 text-white transition-all ${
-                product.color === "blue"
+                productColor === "blue"
                   ? "bg-slate-900 hover:bg-blue-600"
                   : "bg-slate-900 hover:bg-emerald-600"
               }`}
@@ -209,7 +205,7 @@ export default function ProductCard({
           ) : (
             <div className="flex items-center gap-2">
               <button
-                onClick={() => onDecrement && onDecrement(product.id)}
+                onClick={() => decrementQty(product.id)}
                 className="w-8 h-8 rounded-full border border-slate-300 flex items-center justify-center hover:bg-slate-100 text-slate-700 font-semibold text-base leading-none transition-colors"
                 aria-label="Decrease quantity"
               >
@@ -219,7 +215,7 @@ export default function ProductCard({
                 {currentQty}
               </span>
               <button
-                onClick={() => onIncrement && onIncrement(product.id)}
+                onClick={() => incrementQty(product.id)}
                 className="w-8 h-8 rounded-full border border-slate-300 flex items-center justify-center hover:bg-slate-100 text-slate-700 font-semibold text-base leading-none transition-colors"
                 aria-label="Increase quantity"
               >

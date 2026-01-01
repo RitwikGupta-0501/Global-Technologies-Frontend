@@ -7,10 +7,10 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
-import { Product } from "../components/ProductCard";
+import { ProductSchema } from "../src/api/models/ProductSchema";
 
 // Define the shape of your context
-interface CartItem extends Product {
+interface CartItem extends ProductSchema {
   qty: number;
 }
 
@@ -23,7 +23,7 @@ interface CartContextType {
   quoteItemsCount: number;
   checkoutStep: "cart" | "decision" | "form" | "success";
   checkoutMode: "combined" | "split";
-  addToCart: (product: Product) => void;
+  addToCart: (product: ProductSchema) => void;
   removeFromCart: (id: number) => void;
   incrementQty: (id: number) => void; // Helper for simple increment
   decrementQty: (id: number) => void; // Helper for simple decrement
@@ -32,7 +32,7 @@ interface CartContextType {
   handleProceed: () => void;
   setCheckoutStep: (step: "cart" | "decision" | "form" | "success") => void;
   setCheckoutMode: (mode: "combined" | "split") => void;
-  formatPrice: (price: number | null) => string;
+  formatPrice: (price: string | number | null | undefined) => string;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -53,8 +53,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     () =>
       cart.reduce(
         (sum, item) =>
-          item.priceType === "fixed" && item.price != null
-            ? sum + item.price * item.qty
+          item.price_type === "fixed" && item.price != null
+            ? sum + Number(item.price) * item.qty
             : sum,
         0,
       ),
@@ -62,21 +62,27 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   );
 
   const quoteItemsCount = useMemo(
-    () => cart.filter((item) => item.priceType === "quote").length,
+    () => cart.filter((item) => item.price_type === "quote").length,
     [cart],
   );
   const fixedItemsCount = useMemo(
-    () => cart.filter((item) => item.priceType === "fixed").length,
+    () => cart.filter((item) => item.price_type === "fixed").length,
     [cart],
   );
 
-  const formatPrice = useCallback((price: number | null) => {
-    return price != null && Number.isFinite(price)
-      ? `$${price.toFixed(2)}`
-      : "$0.00";
-  }, []);
+  const formatPrice = useCallback(
+    (price: string | number | null | undefined) => {
+      if (price === null || price === undefined) return "$0.00";
 
-  const addToCart = useCallback((product: Product) => {
+      // Ensure it is a number before formatting
+      const numValue = Number(price);
+
+      return Number.isFinite(numValue) ? `$${numValue.toFixed(2)}` : "$0.00";
+    },
+    [],
+  );
+
+  const addToCart = useCallback((product: ProductSchema) => {
     setCart((prev) => {
       const existing = prev.find((item) => item.id === product.id);
       if (existing) {

@@ -7,6 +7,7 @@ export type ProductSchema = {
     name: string;
     description: string;
     price?: (string | null);
+    category: string;
     type: string;
     price_type: string;
     rating: number;

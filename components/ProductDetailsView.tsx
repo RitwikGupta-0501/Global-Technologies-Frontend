@@ -92,8 +92,8 @@ export default function ProductDetailsView({
       desc: product.description,
       price: priceNumber,
       // 2. Logic for Color (Blue/Green)
-      color: product.type === "Software" ? "blue" : "green",
-      type: product.type,
+      color: product.category === "Software" ? "blue" : "green",
+      type: product.category,
       // 3. Logic for Price Label & Type
       priceLabel: priceLabel,
       priceType: isQuote ? "quote" : "fixed",
@@ -184,12 +184,12 @@ export default function ProductDetailsView({
                 <div className="absolute top-4 left-4 transition-opacity duration-300">
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
-                      product.type === "Software"
+                      product.category === "Software"
                         ? "bg-blue-100 text-blue-700"
                         : "bg-emerald-100 text-emerald-700"
                     }`}
                   >
-                    {product.type}
+                    {product.category}
                   </span>
                 </div>
               )}
