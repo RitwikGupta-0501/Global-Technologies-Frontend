@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "generate-client": "openapi --input ./openapi.json --output ./src/api --client fetch"
+    "generate-client": "node scripts/generate-api.js"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.16",

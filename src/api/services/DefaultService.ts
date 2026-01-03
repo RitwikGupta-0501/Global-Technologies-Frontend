@@ -2,7 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AuthResponseSchema } from '../models/AuthResponseSchema';
 import type { ProductSchema } from '../models/ProductSchema';
+import type { UserOutSchema } from '../models/UserOutSchema';
+import type { UserRegisterSchema } from '../models/UserRegisterSchema';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -33,6 +36,35 @@ export class DefaultService {
             path: {
                 'product_id': productId,
             },
+        });
+    }
+    /**
+     * Register User
+     * @param requestBody
+     * @returns AuthResponseSchema Created
+     * @throws ApiError
+     */
+    public static userApiRegisterUser(
+        requestBody: UserRegisterSchema,
+    ): CancelablePromise<AuthResponseSchema> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/auth/register',
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+    /**
+     * Get Me
+     * Used by the frontend to get 'Who am I?'
+     * after login or page reload.
+     * @returns UserOutSchema OK
+     * @throws ApiError
+     */
+    public static userApiGetMe(): CancelablePromise<UserOutSchema> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/auth/me',
         });
     }
 }
