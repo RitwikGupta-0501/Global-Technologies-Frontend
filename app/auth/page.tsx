@@ -3,12 +3,42 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Navbar from "../../components/Navbar";
+import { Check, X } from "lucide-react"; // Import Icons for the validator
 
 import { useAuth } from "~/context/AuthContext";
-import { TokenService } from "@/api/services/TokenService"; // For Login
-import { DefaultService } from "@/api/services/DefaultService"; // For Register
+import { TokenService } from "@/api/services/TokenService";
+import { DefaultService } from "@/api/services/DefaultService";
 import { ApiError } from "@/api";
 import { toast } from "sonner";
+
+// --- PASSWORD RULES CONFIGURATION ---
+const PASSWORD_RULES = [
+  {
+    id: "length",
+    label: "At least 8 characters",
+    isValid: (pwd: string) => pwd.length >= 8,
+  },
+  {
+    id: "upper",
+    label: "One uppercase letter",
+    isValid: (pwd: string) => /[A-Z]/.test(pwd),
+  },
+  {
+    id: "lower",
+    label: "One lowercase letter",
+    isValid: (pwd: string) => /[a-z]/.test(pwd),
+  },
+  {
+    id: "number",
+    label: "One number",
+    isValid: (pwd: string) => /[0-9]/.test(pwd),
+  },
+  {
+    id: "special",
+    label: "One special character (!@#...)",
+    isValid: (pwd: string) => /[!@#$%^&*(),.?":{}|<>]/.test(pwd),
+  },
+];
 
 export default function AuthPage() {
   const { login } = useAuth();
@@ -32,6 +62,9 @@ export default function AuthPage() {
     confirmPassword: "",
   });
 
+  // Track if user has touched the password field (to show validator)
+  const [showPasswordRules, setShowPasswordRules] = useState(false);
+
   // Handle Input Change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -52,7 +85,7 @@ export default function AuthPage() {
   // Toggle Login/Signup Mode
   const handleToggle = (loginMode: boolean) => {
     setIsLogin(loginMode);
-    // Clear errors when switching modes
+    setShowPasswordRules(false); // Hide rules when switching
     setErrors({
       fullName: "",
       companyName: "",
@@ -86,21 +119,34 @@ export default function AuthPage() {
     if (!formData.password) {
       newErrors.password = "Password is required";
       isValid = false;
-    } else if (formData.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters";
-      isValid = false;
+    } else {
+      if (isLogin) {
+        // Simple check for Login
+        if (formData.password.length < 1) {
+          newErrors.password = "Please enter your password";
+          isValid = false;
+        }
+      } else {
+        // Strict check for Register
+        const meetsAllRules = PASSWORD_RULES.every((rule) =>
+          rule.isValid(formData.password),
+        );
+        if (!meetsAllRules) {
+          newErrors.password = "Password does not meet complexity requirements";
+          isValid = false;
+          setShowPasswordRules(true); // Force show rules on error
+        }
+      }
     }
 
     if (!isLogin) {
-      // Full Name Validation (Signup only)
+      // Full Name Validation
       if (!formData.fullName.trim()) {
         newErrors.fullName = "Full name is required";
         isValid = false;
       }
 
-      // Company Name is now optional - Validation removed
-
-      // Confirm Password Validation (Signup only)
+      // Confirm Password Validation
       if (formData.confirmPassword !== formData.password) {
         newErrors.confirmPassword = "Passwords do not match";
         isValid = false;
@@ -115,21 +161,18 @@ export default function AuthPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Client-side validation first
     if (validateForm()) {
       try {
         if (isLogin) {
           // --- LOGIN LOGIC ---
-          // Using the generated TokenService
           const response = await TokenService.tokenObtainPair({
             username: formData.email,
             password: formData.password,
           });
-
-          // Login using the tokens from response
           login(response.access, response.refresh);
         } else {
           // --- REGISTER LOGIC ---
-          // Split "Full Name" because backend expects first_name/last_name
           const nameParts = formData.fullName.trim().split(" ");
           const firstName = nameParts[0];
           const lastName = nameParts.slice(1).join(" ") || ".";
@@ -143,27 +186,78 @@ export default function AuthPage() {
             company_name: formData.companyName || undefined,
           });
 
-          // Auto-login with the tokens returned from registration
-          login(response.tokens.access, response.tokens.refresh, response.user);
+          if (response.tokens) {
+            login(
+              response.tokens.access,
+              response.tokens.refresh,
+              response.user,
+            );
+          } else {
+            toast.success("Account created! Please log in.");
+            handleToggle(true);
+          }
         }
       } catch (error: unknown) {
-        console.error(error);
+        console.error("API Error:", error);
 
-        let errorMessage = "Something went wrong. Please try again.";
+        let generalErrorMessage = "Something went wrong. Please try again.";
 
-        // Type Guard: Check if it is actually an API Error
+        // --- ENHANCED ERROR HANDLING ---
         if (error instanceof ApiError) {
-          errorMessage = error.body?.detail || errorMessage;
+          const body = error.body;
+
+          // CASE 1: Validation Errors (422) - Django Ninja specific
+          if (error.status === 422 && Array.isArray(body?.detail)) {
+            const newServerErrors: typeof errors = { ...errors }; // Copy current errors
+            let hasFieldMapping = false;
+
+            body.detail.forEach(
+              (err: { loc: (string | number)[]; msg: string }) => {
+                // 'loc' is typically ["body", "payload", "email"] -> we want the last part
+                const fieldName = err.loc[err.loc.length - 1];
+
+                // Map Backend Fields to Frontend Form State names
+                if (fieldName === "email") {
+                  newServerErrors.email = err.msg;
+                  hasFieldMapping = true;
+                } else if (fieldName === "password") {
+                  newServerErrors.password = err.msg;
+                  hasFieldMapping = true;
+                } else if (fieldName === "confirm_password") {
+                  newServerErrors.confirmPassword = err.msg;
+                  hasFieldMapping = true;
+                } else if (
+                  fieldName === "first_name" ||
+                  fieldName === "last_name"
+                ) {
+                  newServerErrors.fullName = err.msg; // Map both to 'Full Name'
+                  hasFieldMapping = true;
+                }
+              },
+            );
+
+            if (hasFieldMapping) {
+              setErrors(newServerErrors);
+              // Stop here so we don't show a generic toast if we mapped it to a field
+              return;
+            }
+          }
+
+          // CASE 2: Generic Message (400, 401, 403, etc.)
+          // Usually looks like { "detail": "User with this email already exists." }
+          if (body?.detail && typeof body.detail === "string") {
+            generalErrorMessage = body.detail;
+          }
         }
 
+        // --- FALLBACK DISPLAY ---
+        // If we couldn't map it to a specific field, show a Toast or general error
         if (isLogin) {
-          setErrors((prev) => ({ ...prev, password: errorMessage }));
+          // For Login, usually just show "Invalid credentials" under password or via toast
+          setErrors((prev) => ({ ...prev, password: generalErrorMessage }));
         } else {
-          if (errorMessage.toLowerCase().includes("email")) {
-            setErrors((prev) => ({ ...prev, email: errorMessage }));
-          } else {
-            toast.error(errorMessage);
-          }
+          // For Register, if it's not a field error, show a toast
+          toast.error(generalErrorMessage);
         }
       }
     }
@@ -171,17 +265,15 @@ export default function AuthPage() {
 
   return (
     <main className="min-h-screen bg-slate-50 font-sans relative overflow-hidden">
-      {/* Reusing Navbar for consistency */}
       <Navbar />
 
-      {/* Background Decor (Matching Home Theme) */}
+      {/* Background Decor */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-200 pointer-events-none z-0">
         <div className="absolute top-20 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl mix-blend-multiply animate-blob" />
         <div className="absolute top-20 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl mix-blend-multiply animate-blob animation-delay-2000" />
       </div>
 
       <div className="relative z-10 flex flex-col items-center justify-start pt-24 min-h-screen px-4 sm:px-6 lg:px-8 pb-12">
-        {/* Auth Card */}
         <div className="w-full max-w-md">
           <div className="bg-white/70 backdrop-blur-xl border border-white/50 shadow-2xl rounded-3xl overflow-hidden transition-all duration-300">
             {/* Header / Toggle */}
@@ -195,7 +287,6 @@ export default function AuthPage() {
                   : "Create an account to start your journey."}
               </p>
 
-              {/* Toggle Switch */}
               <div className="bg-slate-100/80 p-1 rounded-xl flex items-center justify-between mb-8 cursor-pointer">
                 <button
                   onClick={() => handleToggle(true)}
@@ -249,7 +340,6 @@ export default function AuthPage() {
                     )}
                   </div>
 
-                  {/* Company Name Field - Optional */}
                   <div className="space-y-1.5 animate-in fade-in slide-in-from-top-4 duration-300">
                     <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">
                       Company Name{" "}
@@ -290,6 +380,7 @@ export default function AuthPage() {
                 )}
               </div>
 
+              {/* PASSWORD FIELD WITH VALIDATOR */}
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">
                   Password
@@ -298,6 +389,7 @@ export default function AuthPage() {
                   type="password"
                   name="password"
                   value={formData.password}
+                  onFocus={() => !isLogin && setShowPasswordRules(true)} // Show on focus (Register only)
                   onChange={handleChange}
                   placeholder="••••••••"
                   className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-all ${
@@ -308,6 +400,41 @@ export default function AuthPage() {
                 />
                 {errors.password && (
                   <p className="text-xs text-red-500 ml-1">{errors.password}</p>
+                )}
+
+                {/* --- PASSWORD STRENGTH VALIDATOR UI --- */}
+                {!isLogin && showPasswordRules && (
+                  <div className="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-100 animate-in fade-in zoom-in-95 duration-200">
+                    <p className="text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-widest">
+                      Requirements
+                    </p>
+                    <ul className="space-y-1.5">
+                      {PASSWORD_RULES.map((rule) => {
+                        const isValid = rule.isValid(formData.password);
+                        return (
+                          <li
+                            key={rule.id}
+                            className={`text-xs flex items-center gap-2 transition-colors duration-200 ${
+                              isValid
+                                ? "text-emerald-600 font-medium"
+                                : "text-slate-400"
+                            }`}
+                          >
+                            <div
+                              className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 border transition-all ${
+                                isValid
+                                  ? "bg-emerald-100 border-emerald-200"
+                                  : "bg-white border-slate-300"
+                              }`}
+                            >
+                              {isValid && <Check className="w-2.5 h-2.5" />}
+                            </div>
+                            {rule.label}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
                 )}
               </div>
 
@@ -355,7 +482,6 @@ export default function AuthPage() {
               </button>
             </form>
 
-            {/* Footer */}
             <div className="px-8 py-6 bg-slate-50 border-t border-slate-100 text-center">
               <p className="text-xs text-slate-500">
                 By continuing, you agree to our{" "}
@@ -376,20 +502,6 @@ export default function AuthPage() {
               href="/"
               className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
               Back to Home
             </Link>
           </div>
