@@ -4,7 +4,14 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Navbar from "../../components/Navbar";
 
+import { useAuth } from "~/context/AuthContext";
+import { TokenService } from "@/api/services/TokenService"; // For Login
+import { DefaultService } from "@/api/services/DefaultService"; // For Register
+import { ApiError } from "@/api";
+import { toast } from "sonner";
+
 export default function AuthPage() {
+  const { login } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
 
   // Form State
@@ -105,13 +112,60 @@ export default function AuthPage() {
   };
 
   // Handle Submit
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (validateForm()) {
-      // Proceed with form submission
-      console.log("Form submitted:", formData);
-      // TODO: Add your API call here (e.g., Firebase, NextAuth)
+      try {
+        if (isLogin) {
+          // --- LOGIN LOGIC ---
+          // Using the generated TokenService
+          const response = await TokenService.tokenObtainPair({
+            username: formData.email,
+            password: formData.password,
+          });
+
+          // Login using the tokens from response
+          login(response.access, response.refresh);
+        } else {
+          // --- REGISTER LOGIC ---
+          // Split "Full Name" because backend expects first_name/last_name
+          const nameParts = formData.fullName.trim().split(" ");
+          const firstName = nameParts[0];
+          const lastName = nameParts.slice(1).join(" ") || ".";
+
+          const response = await DefaultService.userApiRegisterUser({
+            email: formData.email,
+            password: formData.password,
+            confirm_password: formData.confirmPassword,
+            first_name: firstName,
+            last_name: lastName,
+            company_name: formData.companyName || undefined,
+          });
+
+          // Auto-login with the tokens returned from registration
+          login(response.tokens.access, response.tokens.refresh, response.user);
+        }
+      } catch (error: unknown) {
+        console.error(error);
+
+        let errorMessage = "Something went wrong. Please try again.";
+
+        // Type Guard: Check if it is actually an API Error
+        if (error instanceof ApiError) {
+          errorMessage = error.body?.detail || errorMessage;
+        }
+
+        if (isLogin) {
+          setErrors((prev) => ({ ...prev, password: errorMessage }));
+        } else {
+          if (errorMessage.toLowerCase().includes("email")) {
+            setErrors((prev) => ({ ...prev, email: errorMessage }));
+          } else {
+            toast.error(errorMessage);
+          }
+        }
+      }
     }
   };
 

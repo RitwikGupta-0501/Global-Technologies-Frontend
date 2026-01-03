@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
   const { cart, setIsCartOpen } = useCart();
+  const { user, logout } = useAuth();
 
   const cartCount = cart.length;
 
@@ -111,13 +113,27 @@ export default function Navbar() {
               )}
             </button>
 
-            <Link
-              href="/auth"
-              className="bg-slate-900 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-slate-800 transition-all shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 active:scale-[0.98]"
-              aria-label="Partner login portal"
-            >
-              Partner Login
-            </Link>
+            {user ? (
+              <div className="flex items-center gap-4">
+                <span className="hidden md:block text-sm font-semibold text-slate-700">
+                  Hi, {user.first_name}
+                </span>
+                <button
+                  onClick={logout}
+                  className="bg-slate-200 text-slate-700 px-5 py-2.5 rounded-full text-sm font-bold hover:bg-slate-300 transition-all"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/auth"
+                className="bg-slate-900 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-slate-800 transition-all shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 active:scale-[0.98]"
+                aria-label="Partner login portal"
+              >
+                Partner Login
+              </Link>
+            )}
           </div>
         </div>
       </div>
