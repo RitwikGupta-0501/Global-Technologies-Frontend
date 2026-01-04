@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation"; // <--- NEW IMPORT
+import { usePathname, useRouter } from "next/navigation"; // <--- Updated Import (Added useRouter)
 import { X, Check, Loader2, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { useRequestQuote } from "../context/RequestQuoteContext";
@@ -13,8 +13,9 @@ import { DefaultService } from "@/api/services/DefaultService";
 
 export default function RequestQuoteModal() {
   const { isOpen, selectedProduct, closeQuoteModal } = useRequestQuote();
-  const { user } = useAuth();
-  const pathname = usePathname(); // <--- Get current URL
+  const { user, isLoading } = useAuth(); // <--- Get isLoading to prevent premature redirects
+  const pathname = usePathname();
+  const router = useRouter(); // <--- Initialize Router
 
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<"form" | "success">("form");
@@ -29,9 +30,18 @@ export default function RequestQuoteModal() {
   });
 
   // Check if we are already on the product page
-  // We use optional chaining just in case selectedProduct is null briefly
   const isDetailPage =
     selectedProduct && pathname === `/product/${selectedProduct.id}`;
+
+  // --- NEW: Authentication Protection ---
+  useEffect(() => {
+    // Only run this check if the modal is trying to open
+    if (isOpen && !isLoading && !user) {
+      toast.error("Please log in to request a quote");
+      closeQuoteModal(); // Close the modal immediately
+      router.push("/auth"); // Redirect to login
+    }
+  }, [isOpen, isLoading, user, router, closeQuoteModal]);
 
   // Auto-fill user details when modal opens
   useEffect(() => {
@@ -141,9 +151,6 @@ export default function RequestQuoteModal() {
                   {selectedProduct.name}
                 </h3>
 
-                {/* UPDATED: Conditional Rendering + Better Visibility
-                    Only shows if we are NOT on the detail page
-                 */}
                 {!isDetailPage && (
                   <Link
                     href={`/product/${selectedProduct.id}`}
@@ -222,7 +229,6 @@ export default function RequestQuoteModal() {
                 </div>
 
                 <div className="space-y-1.5">
-                  {/* UPDATED: Contrast fixed (slate-500) */}
                   <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Phone{" "}
                     <span className="text-slate-500 font-normal normal-case">
