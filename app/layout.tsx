@@ -7,6 +7,9 @@ import { CartProvider } from "~/context/CartContext";
 import GlobalCart from "~/components/GlobalCart";
 import { AuthProvider } from "~/context/AuthContext";
 
+import { RequestQuoteProvider } from "../context/RequestQuoteContext";
+import RequestQuoteModal from "../components/RequestQuoteModal";
+
 import { OpenAPI } from "@/api/core/OpenAPI";
 OpenAPI.BASE = "http://127.0.0.1:8000";
 
@@ -39,7 +42,10 @@ export default function RootLayout({
       <body className="bg-slate-50 text-slate-600 font-sans antialiased selection:bg-brand-blue selection:text-white">
         <AuthProvider>
           <CartProvider>
-            {children}
+            <RequestQuoteProvider>
+              {children}
+              <RequestQuoteModal />
+            </RequestQuoteProvider>
             <GlobalCart />
           </CartProvider>
         </AuthProvider>

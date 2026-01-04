@@ -9,6 +9,8 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { AuthResponseSchema } from './models/AuthResponseSchema';
 export type { ProductSchema } from './models/ProductSchema';
+export type { QuoteInputSchema } from './models/QuoteInputSchema';
+export type { QuoteSuccessSchema } from './models/QuoteSuccessSchema';
 export type { Schema } from './models/Schema';
 export type { TokenObtainPairInputSchema } from './models/TokenObtainPairInputSchema';
 export type { TokenObtainPairOutputSchema } from './models/TokenObtainPairOutputSchema';

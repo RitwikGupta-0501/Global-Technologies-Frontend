@@ -4,6 +4,8 @@
 /* eslint-disable */
 import type { AuthResponseSchema } from '../models/AuthResponseSchema';
 import type { ProductSchema } from '../models/ProductSchema';
+import type { QuoteInputSchema } from '../models/QuoteInputSchema';
+import type { QuoteSuccessSchema } from '../models/QuoteSuccessSchema';
 import type { UserOutSchema } from '../models/UserOutSchema';
 import type { UserRegisterSchema } from '../models/UserRegisterSchema';
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -65,6 +67,22 @@ export class DefaultService {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/auth/me',
+        });
+    }
+    /**
+     * Create Quote Request
+     * @param requestBody
+     * @returns QuoteSuccessSchema OK
+     * @throws ApiError
+     */
+    public static quotesApiCreateQuoteRequest(
+        requestBody: QuoteInputSchema,
+    ): CancelablePromise<QuoteSuccessSchema> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/quotes/request',
+            body: requestBody,
+            mediaType: 'application/json',
         });
     }
 }

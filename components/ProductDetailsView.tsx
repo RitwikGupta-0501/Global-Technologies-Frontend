@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useCart } from "../context/CartContext";
+import { useRequestQuote } from "../context/RequestQuoteContext";
 import { ProductSchema } from "@/api/models/ProductSchema";
 import { getImageUrl } from "@/lib/utils";
 import {
@@ -37,6 +38,7 @@ export default function ProductDetailsView({
 
   // Cart Context
   const { cart, addToCart } = useCart();
+  const { openQuoteModal } = useRequestQuote(); // <--- IMPORT HOOK
 
   // Ref for the interval
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -97,6 +99,10 @@ export default function ProductDetailsView({
     });
   };
 
+  const handleRequestQuote = () => {
+    openQuoteModal(product);
+  };
+
   // Zoom Handlers
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!imageContainerRef.current) return;
@@ -111,16 +117,16 @@ export default function ProductDetailsView({
   const mainImage = product.images[selectedImage] || "/placeholder.png";
 
   return (
-    <main className="min-h-screen bg-slate-50 font-sans relative overflow-hidden">
+    <main className="min-h-screen bg-slate-50 font-sans relative overflow-hidden pt-18">
+      {" "}
       {/* Background Decor */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-200 pointer-events-none z-0">
         <div className="absolute top-20 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl mix-blend-multiply animate-blob" />
         <div className="absolute top-20 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl mix-blend-multiply animate-blob animation-delay-2000" />
       </div>
-
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-4 lg:mt-8">
         {/* Breadcrumbs */}
-        <nav className="flex items-center text-sm text-slate-500 mb-8">
+        <nav className="flex items-center text-sm text-slate-500 mb-8 pt-2">
           <Link
             href="/"
             className="hover:text-slate-900 transition-colors flex items-center"
@@ -315,7 +321,7 @@ export default function ProductDetailsView({
 
                 {/* Main Action Button */}
                 <button
-                  onClick={handleAddToCart}
+                  onClick={isQuote ? handleRequestQuote : handleAddToCart}
                   className={`flex-1 h-14 rounded-xl font-bold text-white shadow-lg flex items-center justify-center gap-2 transform transition-all active:scale-[0.98] ${
                     isQuote
                       ? "bg-slate-900 hover:bg-slate-800 shadow-slate-900/20"
@@ -409,7 +415,7 @@ export default function ProductDetailsView({
             </div>
 
             {/* Trust Badges */}
-            <div className="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-slate-100">
+            {/*<div className="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-slate-100">
               <div className="flex flex-col items-center text-center">
                 <Shield className="w-6 h-6 text-slate-400 mb-2" />
                 <span className="text-xs font-semibold text-slate-500">
@@ -428,7 +434,7 @@ export default function ProductDetailsView({
                   30-Day Returns
                 </span>
               </div>
-            </div>
+            </div>*/}
           </div>
         </div>
       </div>

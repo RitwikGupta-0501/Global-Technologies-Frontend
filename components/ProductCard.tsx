@@ -7,6 +7,7 @@ import { Plus, Phone } from "lucide-react";
 import { ProductSchema } from "@/api/models/ProductSchema";
 import { getImageUrl } from "@/lib/utils";
 import { useCart } from "~/context/CartContext";
+import { useRequestQuote } from "../context/RequestQuoteContext";
 
 interface ProductProps {
   product: ProductSchema;
@@ -14,6 +15,7 @@ interface ProductProps {
 
 export default function ProductCard({ product }: ProductProps) {
   const { cart, addToCart, incrementQty, decrementQty } = useCart();
+  const { openQuoteModal } = useRequestQuote();
 
   const cartItem = cart.find((item) => item.id === product.id);
   const currentQty = cartItem ? cartItem.qty : 0;
@@ -45,10 +47,7 @@ export default function ProductCard({ product }: ProductProps) {
 
   // TODO: Add logic for RequestQuote
   const handleRequestQuote = () => {
-    toast("Request for quote sent", {
-      description: `For: ${product.name}`,
-      duration: 3000,
-    });
+    openQuoteModal(product);
   };
 
   // Image cycling (unchanged - perfect)
