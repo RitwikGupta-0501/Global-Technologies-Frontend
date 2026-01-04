@@ -3,17 +3,21 @@ import Navbar from "../../../components/Navbar";
 import ProductDetailsView from "../../../components/ProductDetailsView";
 import { DefaultService } from "../../../src/api/services/DefaultService";
 
-// 1. Update the type definition to be a Promise
 export default async function ProductPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  // 2. Await the params to extract the ID
+  // 1. Await params (Next.js 15 standard)
   const { id } = await params;
 
-  // 3. Now 'id' is a real string ("1"), so Number(id) works
-  const product = await DefaultService.productApiGetProduct(Number(id));
+  // 2. HYBRID LOGIC: Extract the numeric ID
+  // If URL is "15-macbook-pro", split by "-" and take the first part ("15").
+  // If URL is just "15", it still works correctly.
+  const productId = id.split("-")[0];
+
+  // 3. Fetch Data using the clean numeric ID
+  const product = await DefaultService.productApiGetProduct(Number(productId));
 
   return (
     <main className="min-h-screen bg-slate-50 pb-20">
