@@ -1,5 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Toaster } from "sonner";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 
@@ -11,7 +12,7 @@ import { RequestQuoteProvider } from "../context/RequestQuoteContext";
 import RequestQuoteModal from "../components/RequestQuoteModal";
 
 import { OpenAPI } from "@/api/core/OpenAPI";
-OpenAPI.BASE = "http://127.0.0.1:8000";
+OpenAPI.BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 // Font: Inter (Body)
 const inter = Inter({
@@ -50,6 +51,12 @@ export default function RootLayout({
           </CartProvider>
         </AuthProvider>
         <Toaster position="top-right" richColors />
+        {/* Load Razorpay SDK */}
+        <Script
+          id="razorpay-checkout-js"
+          src="https://checkout.razorpay.com/v1/checkout.js"
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );

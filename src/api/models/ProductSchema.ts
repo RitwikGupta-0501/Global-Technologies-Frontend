@@ -5,6 +5,7 @@
 export type ProductSchema = {
     id: number;
     name: string;
+    slug: string;
     description: string;
     price?: (string | null);
     category: string;

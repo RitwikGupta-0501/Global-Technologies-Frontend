@@ -3,9 +3,13 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { AuthResponseSchema } from '../models/AuthResponseSchema';
+import type { OrderCreateSchema } from '../models/OrderCreateSchema';
+import type { OrderInitSchema } from '../models/OrderInitSchema';
+import type { PaymentVerifySchema } from '../models/PaymentVerifySchema';
 import type { ProductSchema } from '../models/ProductSchema';
 import type { QuoteInputSchema } from '../models/QuoteInputSchema';
 import type { QuoteSuccessSchema } from '../models/QuoteSuccessSchema';
+import type { SavedAddressSchema } from '../models/SavedAddressSchema';
 import type { UserOutSchema } from '../models/UserOutSchema';
 import type { UserRegisterSchema } from '../models/UserRegisterSchema';
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -81,6 +85,49 @@ export class DefaultService {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/quotes/request',
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+    /**
+     * Initiate Order
+     * @param requestBody
+     * @returns OrderInitSchema OK
+     * @throws ApiError
+     */
+    public static orderApiInitiateOrder(
+        requestBody: OrderCreateSchema,
+    ): CancelablePromise<OrderInitSchema> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/order/initiate',
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+    /**
+     * Get My Addresses
+     * @returns SavedAddressSchema OK
+     * @throws ApiError
+     */
+    public static orderApiGetMyAddresses(): CancelablePromise<Array<SavedAddressSchema>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/order/my-addresses',
+        });
+    }
+    /**
+     * Verify Payment
+     * @param requestBody
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static orderApiVerifyPayment(
+        requestBody: PaymentVerifySchema,
+    ): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/order/verify',
             body: requestBody,
             mediaType: 'application/json',
         });
