@@ -24,9 +24,7 @@ interface CartContextType {
   setIsCartOpen: (isOpen: boolean) => void;
   cartTotal: number;
   fixedItemsCount: number;
-  quoteItemsCount: number;
-  checkoutStep: "cart" | "decision" | "form" | "success";
-  checkoutMode: "combined" | "split";
+  checkoutStep: "cart" | "form" | "success";
   addToCart: (product: ProductSchema, qty?: number) => void;
   removeFromCart: (id: number) => void;
   incrementQty: (id: number) => void; // Helper for simple increment
@@ -34,8 +32,7 @@ interface CartContextType {
   updateQty: (id: number, delta: number) => void;
   resetCart: () => void;
   handleProceed: () => void;
-  setCheckoutStep: (step: "cart" | "decision" | "form" | "success") => void;
-  setCheckoutMode: (mode: "combined" | "split") => void;
+  setCheckoutStep: (step: "cart" | "form" | "success") => void;
   formatPrice: (price: string | number | null | undefined) => string;
 }
 
@@ -78,11 +75,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // --- State ---
   const [cart, setCart] = useLocalStorageCart([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [checkoutStep, setCheckoutStep] = useState<
-    "cart" | "decision" | "form" | "success"
-  >("cart");
-  const [checkoutMode, setCheckoutMode] = useState<"combined" | "split">(
-    "combined",
+  const [checkoutStep, setCheckoutStep] = useState<"cart" | "form" | "success">(
+    "cart",
   );
 
   // Multi-tab sync
@@ -115,10 +109,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     [cart],
   );
 
-  const quoteItemsCount = useMemo(
-    () => cart.filter((item) => item.price_type === "quote").length,
-    [cart],
-  );
   const fixedItemsCount = useMemo(
     () => cart.filter((item) => item.price_type === "fixed").length,
     [cart],
@@ -182,19 +172,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   );
 
   const handleProceed = useCallback(() => {
-    if (fixedItemsCount > 0 && quoteItemsCount > 0) {
-      setCheckoutStep("decision");
-    } else {
-      setCheckoutMode(fixedItemsCount > 0 ? "split" : "combined");
-      setCheckoutStep("form");
-    }
-  }, [fixedItemsCount, quoteItemsCount]);
+    setCheckoutStep("form");
+  }, []);
 
   const resetCart = useCallback(() => {
     setCart([]);
     setIsCartOpen(false);
     setCheckoutStep("cart");
-    setCheckoutMode("combined");
   }, [setCart]);
 
   return (
@@ -205,9 +189,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setIsCartOpen,
         cartTotal,
         fixedItemsCount,
-        quoteItemsCount,
         checkoutStep,
-        checkoutMode,
         addToCart,
         removeFromCart,
         updateQty,
@@ -216,7 +198,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         resetCart,
         handleProceed,
         setCheckoutStep,
-        setCheckoutMode,
         formatPrice,
       }}
     >
