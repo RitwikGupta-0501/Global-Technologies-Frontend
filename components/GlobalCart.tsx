@@ -81,31 +81,29 @@ export default function GlobalCart() {
       }
 
       // 2. Call Backend: INITIATE ORDER
-      const orderData = await DefaultService.ordersApiInitiateOrder({
-        requestBody: {
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
-          company_name: formData.companyName,
-          gstin: formData.gstin,
-          save_info: formData.saveInfo,
-          billing_address: {
-            address_line1: formData.billingAddress.line1,
-            address_line2: formData.billingAddress.line2,
-            city: formData.billingAddress.city,
-            state: formData.billingAddress.state,
-            pincode: formData.billingAddress.pincode,
-          },
-          shipping_address: {
-            address_line1: formData.shippingAddress.line1,
-            address_line2: formData.shippingAddress.line2,
-            city: formData.shippingAddress.city,
-            state: formData.shippingAddress.state,
-            pincode: formData.shippingAddress.pincode,
-          },
-          items: itemsPayload,
+      const orderData = await DefaultService.orderApiInitiateOrder({
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        company_name: formData.companyName,
+        gstin: formData.gstin,
+        save_info: formData.saveInfo,
+        billing_address: {
+          address_line1: formData.billingAddress.line1,
+          address_line2: formData.billingAddress.line2,
+          city: formData.billingAddress.city,
+          state: formData.billingAddress.state,
+          pincode: formData.billingAddress.pincode,
         },
+        shipping_address: {
+          address_line1: formData.shippingAddress.line1,
+          address_line2: formData.shippingAddress.line2,
+          city: formData.shippingAddress.city,
+          state: formData.shippingAddress.state,
+          pincode: formData.shippingAddress.pincode,
+        },
+        items: itemsPayload,
       });
 
       // 3. Open Razorpay Popup
@@ -119,12 +117,10 @@ export default function GlobalCart() {
         handler: async function (response: any) {
           // 4. Payment Success -> Call Backend: VERIFY
           try {
-            await DefaultService.ordersApiVerifyPayment({
-              requestBody: {
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-              },
+            await DefaultService.orderApiVerifyPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
             });
 
             // 5. Success State
