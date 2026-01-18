@@ -68,8 +68,11 @@ export const setupAxiosInterceptors = (onLogout: () => void) => {
           // 4. Update Storage & Config
           const newAccess = response.access;
           const newRefresh = response.refresh; // If rotation is enabled
-
+          if (!newAccess) {
+            throw new Error("No access token received from refresh");
+          }
           localStorage.setItem("access_token", newAccess);
+
           if (newRefresh) {
             localStorage.setItem("refresh_token", newRefresh);
           }
