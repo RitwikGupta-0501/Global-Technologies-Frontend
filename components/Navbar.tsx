@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import Image from "next/image";
 
 export default function Navbar() {
   const { cart, setIsCartOpen } = useCart();
@@ -16,33 +17,19 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-20">
           {/* Brand Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-blue-600 via-blue-500 to-emerald-600 flex items-center justify-center text-white shadow-lg">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            <div className="flex items-center justify-center">
+              <Link href="/">
+                <Image
+                  src="/logo.png"
+                  alt="Global Technologies"
+                  width={200}
+                  height={1000}
+                  quality={100}
+                  unoptimized
                 />
-              </svg>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-xl text-slate-900 leading-none tracking-tight">
-                NEXGEN
-              </span>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                Distribution
-              </span>
+              </Link>
             </div>
           </div>
-
           {/* Search Pill (Desktop) */}
           <div className="hidden md:flex flex-1 max-w-xl mx-12">
             <label htmlFor="search" className="sr-only">
@@ -75,7 +62,6 @@ export default function Navbar() {
               </div>
             </div>
           </div>
-
           {/* Actions */}
           <div className="flex items-center gap-6">
             <Link

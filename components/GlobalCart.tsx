@@ -46,6 +46,7 @@ export default function GlobalCart() {
     setIsCartOpen,
     setCheckoutStep,
     resetCart,
+    clearCart,
     formatPrice,
     handleProceed,
     updateQty,
@@ -125,7 +126,7 @@ export default function GlobalCart() {
 
             // 5. Success State
             toast.success("Payment Successful!");
-            resetCart(); // Clears cart and sets step to 'cart'
+            clearCart(); // Clears cart and sets step to 'cart'
             setCheckoutStep("success"); // Override step to show success message
           } catch (verifyError) {
             console.error("Verification Failed", verifyError);

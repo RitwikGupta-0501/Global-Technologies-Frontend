@@ -36,7 +36,7 @@ export default function ProductDetailsView({
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
   // Cart Context
-  const { cart, addToCart, removeFromCart } = useCart();
+  const { cart, addToCart, removeFromCart, formatPrice } = useCart();
   const { openQuoteModal } = useRequestQuote();
 
   // Ref for the interval
@@ -53,7 +53,6 @@ export default function ProductDetailsView({
   // --- DATA MAPPING (Bridge API -> UI) ---
   const isQuote = product.price_type === "quote";
   const priceLabel = isQuote ? "Custom Configuration" : "Per License";
-  const priceNumber = product.price ? Number(product.price) : 0;
   const stockCount = 10;
 
   // --- LOGIC ---
@@ -273,12 +272,7 @@ export default function ProductDetailsView({
                     </div>
                   ) : (
                     <div className="text-4xl font-bold text-slate-900">
-                      ${(priceNumber * syncedQuantity).toLocaleString()}
-                      {syncedQuantity > 1 && (
-                        <span className="text-lg text-slate-400 font-normal ml-2">
-                          (${priceNumber.toLocaleString()} ea)
-                        </span>
-                      )}
+                      {formatPrice(product.price)}
                     </div>
                   )}
                 </div>

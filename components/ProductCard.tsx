@@ -15,7 +15,8 @@ interface ProductProps {
 }
 
 export default function ProductCard({ product }: ProductProps) {
-  const { cart, addToCart, incrementQty, decrementQty } = useCart();
+  const { cart, addToCart, incrementQty, decrementQty, formatPrice } =
+    useCart();
   const { openQuoteModal } = useRequestQuote();
 
   const cartItem = cart.find((item) => item.id === product.id);
@@ -25,15 +26,7 @@ export default function ProductCard({ product }: ProductProps) {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const isQuote = product.price_type === "quote";
-  const priceNumber = product.price != null ? Number(product.price) : null;
   const productColor = product.category === "Software" ? "blue" : "green";
-
-  // Safe price formatting
-  const formatPrice = useCallback(() => {
-    return priceNumber && Number.isFinite(priceNumber)
-      ? `$${priceNumber.toFixed(2)}`
-      : "Price unavailable";
-  }, [priceNumber]);
 
   const handleAddToCart = () => {
     // Call Context Function
@@ -41,7 +34,7 @@ export default function ProductCard({ product }: ProductProps) {
 
     // Show Feedback
     toast.success(`${product.name} added to cart!`, {
-      description: `Quantity: 1 • ${formatPrice()}`,
+      description: `Quantity: 1 • ${formatPrice(product.price)}`,
       duration: 3000,
     });
   };
@@ -213,7 +206,7 @@ export default function ProductCard({ product }: ProductProps) {
           className={`flex items-center ${isQuote ? "" : "justify-between w-full"}`}
         >
           <p className="font-bold text-xl text-slate-900">
-            {!isQuote ? <span>{formatPrice()}</span> : <span />}
+            {!isQuote ? <span>{formatPrice(product.price)}</span> : <span />}
           </p>
 
           {/* CTA area */}

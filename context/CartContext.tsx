@@ -31,6 +31,7 @@ interface CartContextType {
   decrementQty: (id: number) => void; // Helper for simple decrement
   updateQty: (id: number, delta: number) => void;
   resetCart: () => void;
+  clearCart: () => void;
   handleProceed: () => void;
   setCheckoutStep: (step: "cart" | "form" | "success") => void;
   formatPrice: (price: string | number | null | undefined) => string;
@@ -116,12 +117,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const formatPrice = useCallback(
     (price: string | number | null | undefined) => {
-      if (price === null || price === undefined) return "$0.00";
+      if (price === null || price === undefined) return "₹0.00";
 
       // Ensure it is a number before formatting
       const numValue = Number(price);
 
-      return Number.isFinite(numValue) ? `$${numValue.toFixed(2)}` : "$0.00";
+      return Number.isFinite(numValue) ? `₹${numValue.toFixed(2)}` : "₹0.00";
     },
     [],
   );
@@ -181,6 +182,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCheckoutStep("cart");
   }, [setCart]);
 
+  const clearCart = useCallback(() => {
+    setCart([]);
+  }, [setCart]);
+
   return (
     <CartContext.Provider
       value={{
@@ -196,6 +201,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         incrementQty,
         decrementQty,
         resetCart,
+        clearCart,
         handleProceed,
         setCheckoutStep,
         formatPrice,
