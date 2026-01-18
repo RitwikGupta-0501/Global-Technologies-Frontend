@@ -24,7 +24,6 @@ export default function Navbar() {
                   alt="Global Technologies"
                   width={200}
                   height={1000}
-                  quality={100}
                   unoptimized
                 />
               </Link>

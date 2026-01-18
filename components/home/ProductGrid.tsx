@@ -1,15 +1,14 @@
 // components/home/ProductGrid.tsx
 "use client";
 
-import ProductCard, { Product } from "../ProductCard";
-import { useCart } from "../../context/CartContext";
+import ProductCard from "../ProductCard";
+import { ProductSchema } from "@/api/models/ProductSchema";
 
 interface ProductGridProps {
-  products: Product[];
+  products: ProductSchema[];
 }
 
 export default function ProductGrid({ products }: ProductGridProps) {
-  const { cart, addToCart, incrementQty, decrementQty } = useCart();
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
       <div className="flex flex-col lg:flex-row gap-12">
@@ -75,19 +74,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
 
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
             {products.map((product) => {
-              const currentQty =
-                cart.find((item) => item.id === product.id)?.qty ?? 0;
-
-              return (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  currentQty={currentQty}
-                  onAddToCart={() => addToCart(product)}
-                  onIncrement={() => incrementQty(product.id)}
-                  onDecrement={() => decrementQty(product.id)}
-                />
-              );
+              return <ProductCard key={product.id} product={product} />;
             })}
           </div>
         </div>
