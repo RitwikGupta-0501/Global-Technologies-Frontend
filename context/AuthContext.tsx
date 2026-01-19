@@ -9,7 +9,7 @@ import { setupAxiosInterceptors } from "@/lib/axios-setup";
 import { toast } from "sonner";
 
 // Initialize API for the Browser
-OpenAPI.BASE = "http://127.0.0.1:8000";
+OpenAPI.BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 interface AuthContextType {
   user: UserOutSchema | null;
