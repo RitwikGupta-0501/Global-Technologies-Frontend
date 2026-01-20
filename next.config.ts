@@ -16,6 +16,12 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "**.nip.io", // Allows any IP-based nip.io domain
+        port: "", // Leave empty for standard HTTPS (443)
+        pathname: "/media/**", // Only allow media path for security
+      },
     ],
   },
 };
