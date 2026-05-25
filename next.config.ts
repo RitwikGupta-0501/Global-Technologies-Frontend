@@ -5,9 +5,9 @@ const nextConfig: NextConfig = {
     dangerouslyAllowLocalIP: true,
     remotePatterns: [
       {
-        protocol: "http",
-        hostname: "127.0.0.1",
-        port: "8000",
+        protocol: process.env.NODE_ENV === "production" ? "https" : "http",
+        hostname: process.env.NEXT_PUBLIC_IMAGE_DOMAIN || "127.0.0.1",
+        port: process.env.NEXT_PUBLIC_IMAGE_PORT || (process.env.NODE_ENV === "production" ? "" : "8000"),
         pathname: "/media/**",
       },
       {

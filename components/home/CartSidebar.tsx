@@ -133,7 +133,7 @@ export default function CartSidebar({
     >
       {/* Backdrop */}
       <div
-        className={`absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ${
+        className={`absolute inset-0 bg-gray-900/30 transition-opacity duration-300 ${
           isCartOpen ? "opacity-100" : "opacity-0"
         }`}
         onClick={onClose}
@@ -156,14 +156,14 @@ export default function CartSidebar({
           </h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"
+            className="p-2 hover:bg-slate-100 rounded-full text-slate-500 hover:text-slate-700 transition-all duration-200 hover-scale"
           >
             <X size={20} />
           </button>
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50">
+        <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
           {checkoutStep === "success" ? (
             // --- SUCCESS VIEW ---
             <div className="flex flex-col items-center justify-center h-full text-center space-y-6 animate-in zoom-in-95">

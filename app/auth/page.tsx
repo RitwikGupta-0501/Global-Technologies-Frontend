@@ -267,19 +267,15 @@ export default function AuthPage() {
     <main className="min-h-screen bg-slate-50 font-sans relative overflow-hidden">
       <Navbar />
 
-      {/* Background Decor */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-200 pointer-events-none z-0">
-        <div className="absolute top-20 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl mix-blend-multiply animate-blob" />
-        <div className="absolute top-20 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl mix-blend-multiply animate-blob animation-delay-2000" />
-      </div>
+
 
       <div className="relative z-10 flex flex-col items-center justify-start pt-24 min-h-screen px-4 sm:px-6 lg:px-8 pb-12">
         <div className="w-full max-w-md">
-          <div className="bg-white/70 backdrop-blur-xl border border-white/50 shadow-2xl rounded-3xl overflow-hidden transition-all duration-300">
+          <div className="bg-white border border-gray-100 shadow-xl rounded-2xl overflow-hidden transition-all duration-300">
             {/* Header / Toggle */}
             <div className="p-8 pb-0 text-center">
               <h2 className="text-3xl font-bold text-slate-900 mb-2">
-                {isLogin ? "Welcome Back" : "Join NexGen"}
+                {isLogin ? "Welcome Back" : "Join Global Technologies"}
               </h2>
               <p className="text-slate-500 mb-8 text-sm">
                 {isLogin
@@ -287,7 +283,7 @@ export default function AuthPage() {
                   : "Create an account to start your journey."}
               </p>
 
-              <div className="bg-slate-100/80 p-1 rounded-xl flex items-center justify-between mb-8 cursor-pointer">
+              <div className="bg-gray-100 p-1 rounded-xl flex items-center justify-between mb-8 cursor-pointer">
                 <button
                   onClick={() => handleToggle(true)}
                   type="button"

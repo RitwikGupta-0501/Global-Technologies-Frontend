@@ -188,7 +188,7 @@ export default function ProductCard({ product }: ProductProps) {
 
       {/* Footer: Price & Action */}
       <div
-        className={`mt-auto pt-4 border-t border-slate-100 flex ${
+        className={`mt-auto pt-4 border-t border-slate-100 flex gap-4 ${
           isQuote
             ? "flex-row items-center justify-between" // Quote: Label | Button
             : "flex-col items-start" // Standard: Label (top), Price|Button (bottom)

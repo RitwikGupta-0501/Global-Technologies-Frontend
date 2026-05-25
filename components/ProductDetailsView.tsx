@@ -124,11 +124,7 @@ export default function ProductDetailsView({
 
   return (
     <main className="min-h-screen bg-slate-50 font-sans relative overflow-hidden pt-18">
-      {/* Background Decor */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-200 pointer-events-none z-0">
-        <div className="absolute top-20 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl mix-blend-multiply animate-blob" />
-        <div className="absolute top-20 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl mix-blend-multiply animate-blob animation-delay-2000" />
-      </div>
+
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-4 lg:mt-8">
         {/* Breadcrumbs */}
@@ -168,7 +164,7 @@ export default function ProductDetailsView({
 
                   {showZoom && (
                     <div
-                      className="absolute pointer-events-none border-2 border-slate-400/50 bg-white/10 backdrop-blur-none shadow-2xl rounded-xl"
+                      className="absolute pointer-events-none border-2 border-slate-400/50 bg-white shadow-2xl rounded-xl"
                       style={{
                         width: "150px",
                         height: "150px",
@@ -241,17 +237,7 @@ export default function ProductDetailsView({
                 {product.name}
               </h1>
               <div className="flex items-center gap-4 text-sm">
-                <div className="flex items-center text-yellow-400">
-                  <Star className="w-4 h-4 fill-current" />
-                  <span className="ml-1 font-semibold text-slate-900">
-                    {product.rating}
-                  </span>
-                </div>
-                <span className="text-slate-300">|</span>
-                <span className="text-slate-500">
-                  {product.reviews} Reviews
-                </span>
-                <span className="text-slate-300">|</span>
+                {/* Reviews & Ratings moved to Future Scope */}
                 <span className="text-emerald-600 font-medium flex items-center">
                   <Check className="w-4 h-4 mr-1" />
                   {stockCount > 0 ? "In Stock" : "Out of Stock"}
@@ -260,7 +246,7 @@ export default function ProductDetailsView({
             </div>
 
             {/* Price & Cart Section */}
-            <div className="bg-white/60 backdrop-blur-md border border-white/50 rounded-2xl p-6 shadow-sm mb-8">
+            <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-8">
               <div className="flex items-end justify-between mb-6">
                 <div>
                   <p className="text-sm text-slate-500 font-medium mb-1">

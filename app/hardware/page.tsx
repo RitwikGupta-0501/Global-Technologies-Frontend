@@ -1,36 +1,35 @@
-import Navbar from "../components/Navbar";
-import { ProductSchema } from "@/api/models/ProductSchema";
-import HeroSection from "../components/home/HeroSection";
-import HighlightsSection from "../components/home/HighlightsSection";
-import ProductGrid from "../components/home/ProductGrid";
+import Navbar from "../../components/Navbar";
+import ProductGrid from "../../components/home/ProductGrid";
 
 async function getProducts() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/`, {
-    // Cache for 5 minutes, revalidate on demand
     next: { revalidate: 300 },
   });
 
   if (!res.ok) {
-    // Fallback to empty array on error
     return [];
   }
-
   const data = await res.json();
   return Array.isArray(data) ? data : (data.items || data.results || []);
 }
 
-export default async function Home() {
-  // --- 1. Mock Data ---
+export default async function HardwarePage() {
   const products = await getProducts();
 
   return (
     <main className="min-h-screen bg-slate-50 font-sans">
       <Navbar />
 
-      <HeroSection />
-      <HighlightsSection />
+      <div className="pt-32 pb-12 bg-white border-b border-slate-200 mb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Fleet Hardware</h1>
+          <p className="mt-4 max-w-2xl text-lg text-slate-500">
+            Commercial dashcams, GPS tracking, and safety sensors for comprehensive fleet management.
+          </p>
+        </div>
+      </div>
 
-      <ProductGrid products={products} />
+      <ProductGrid products={products} initialCategory="Hardware" hideCategoryFilter={true} />
 
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-400 py-16 border-t border-slate-800">

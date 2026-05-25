@@ -88,16 +88,16 @@ export default function RequestQuoteModal() {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-gray-900/30 transition-opacity duration-300"
         onClick={handleClose}
       />
 
       {/* Modal Card */}
-      <div className="relative w-full max-w-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-2xl rounded-3xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-2xl bg-white border border-gray-100 shadow-xl rounded-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 fade-in duration-300">
         {/* Close Button */}
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 p-2 rounded-full bg-slate-100/50 hover:bg-slate-200 text-slate-500 transition-colors z-10"
+          className="absolute top-4 right-4 p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition-all duration-200 z-10 hover-scale"
         >
           <X className="w-5 h-5" />
         </button>
@@ -127,7 +127,7 @@ export default function RequestQuoteModal() {
           // --- FORM STATE ---
           <div className="flex flex-col md:flex-row h-full">
             {/* Sidebar: Product Info */}
-            <div className="w-full md:w-2/5 bg-slate-50/50 border-r border-slate-100 p-8 flex flex-col">
+            <div className="w-full md:w-2/5 bg-gray-50 border-r border-gray-100 p-8 flex flex-col">
               <div className="relative aspect-square w-full bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden mb-6">
                 <Image
                   src={getImageUrl(selectedProduct.images[0])}
