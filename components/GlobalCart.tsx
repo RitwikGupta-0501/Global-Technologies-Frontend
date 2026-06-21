@@ -143,6 +143,12 @@ export default function GlobalCart() {
         },
       };
 
+      if (!window.Razorpay) {
+        toast.error("Payment system is unavailable. Please refresh and try again.");
+        setLoading(false);
+        return;
+      }
+      
       const rzp1 = new window.Razorpay(options);
       rzp1.open();
     } catch (error) {
