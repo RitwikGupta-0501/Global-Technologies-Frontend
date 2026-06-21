@@ -51,7 +51,7 @@ export const setupAxiosInterceptors = (onLogout: () => void) => {
         originalRequest._retry = true;
         isRefreshing = true;
 
-        const refreshToken = localStorage.getItem("refresh_token");
+        const refreshToken = sessionStorage.getItem("refresh_token");
 
         if (!refreshToken) {
           isRefreshing = false;
@@ -71,10 +71,10 @@ export const setupAxiosInterceptors = (onLogout: () => void) => {
           if (!newAccess) {
             throw new Error("No access token received from refresh");
           }
-          localStorage.setItem("access_token", newAccess);
+          sessionStorage.setItem("access_token", newAccess);
 
           if (newRefresh) {
-            localStorage.setItem("refresh_token", newRefresh);
+            sessionStorage.setItem("refresh_token", newRefresh);
           }
           OpenAPI.TOKEN = newAccess;
 

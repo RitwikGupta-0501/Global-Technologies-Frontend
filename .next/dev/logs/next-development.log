@@ -1,0 +1,80 @@
+[00:00:35.477] Server  LOG     ✓ Ready in 31.9s
+[00:00:56.910] Server  LOG     ○ Compiling / ...
+[00:01:55.666] Server  ERROR   TypeError: fetch failed
+[00:02:00.050] Server  WARN    ⚠ Cross origin request detected from 192.168.29.46 to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+[00:02:00.731] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:02:02.413] Browser ERROR   A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+%s%s https://react.dev/link/hydration-mismatch 
+
+  ...
+    <InnerScrollAndFocusHandler segmentPath={[...]} focusAndScrollRef={{apply:false, ...}}>
+      <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+        <LoadingBoundary name="/" loading={null}>
+          <HTTPAccessFallbackBoundary notFound={<SegmentViewNode>} forbidden={undefined} unauthorized={undefined}>
+            <HTTPAccessFallbackErrorBoundary pathname="/" notFound={<SegmentViewNode>} forbidden={undefined} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <InnerLayoutRouter url="/" tree={[...]} params={{}} cacheNode={{rsc:<Fragment>, ...}} ...>
+                    <SegmentViewNode type="page" pagePath="page.tsx">
+                      <SegmentTrieNode>
+                      <Home>
+                        <main className="min-h-scre...">
+                          <Navbar>
+                            <nav className="fixed w-fu...">
+                              <div className="max-w-7xl ...">
+                                <div
+                                  className="flex items-center justify-between h-20"
+-                                 data-protonpass-form=""
+                                >
+                          ...
+                    ...
+                  ...
+      ...
+
+[00:02:02.413] Browser WARN    Image with src "http://192.168.29.46:3000/logo.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:02:02.413] Browser ERROR   Failed to fetch products for search {"code":"ERR_NETWORK","config":{"adapter":["xhr","http","fetch"],"allowAbsoluteUrls":true,"cancelToken":{"_listeners":[null],"promise":{}},"env":{},"headers":{"Accept":"application/json"},"maxBodyLength":-1,"maxContentLength":-1,"method":"get","timeout":0,"transformRequest":[null],"transformResponse":[null],"transitional":{"clarifyTimeoutError":false,"forcedJSONParsing":true,"silentJSONParsing":true},"url":"http://127.0.0.1:8000/api/products/","withCredentials":false,"withXSRFToken":false,"xsrfCookieName":"XSRF-TOKEN","xsrfHeaderName":"X-XSRF-TOKEN"},"message":"Network Error","name":"AxiosError","stack":"handleError@http://192.168.29.46:3000/_next/static/chunks/node_modules_88b04ca1._.js:9818:25\n"}
+[00:02:15.492] Server  LOG     ✓ Finished writing to filesystem cache in 21.4s
+[00:02:55.976] Server  LOG     ✓ Finished filesystem cache database compaction in 40s
+[00:02:57.249] Server  LOG     ✓ Finished writing to filesystem cache in 39.8s
+[00:05:11.205] Server  ERROR   TypeError: fetch failed
+[00:07:41.144] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:07:41.144] Browser WARN    Image with src "http://192.168.29.46:3000/logo.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:07:41.268] Browser ERROR   Failed to fetch products for search {"code":"ERR_NETWORK","config":{"adapter":["xhr","http","fetch"],"allowAbsoluteUrls":true,"cancelToken":{"_listeners":[null],"promise":{}},"env":{},"headers":{"Accept":"application/json"},"maxBodyLength":-1,"maxContentLength":-1,"method":"get","timeout":0,"transformRequest":[null],"transformResponse":[null],"transitional":{"clarifyTimeoutError":false,"forcedJSONParsing":true,"silentJSONParsing":true},"url":"http://127.0.0.1:8000/api/products/","withCredentials":false,"withXSRFToken":false,"xsrfCookieName":"XSRF-TOKEN","xsrfHeaderName":"X-XSRF-TOKEN"},"message":"Network Error","name":"AxiosError","stack":"handleError@http://192.168.29.46:3000/_next/static/chunks/node_modules_88b04ca1._.js:9818:25\nEventHandlerNonNull*dispatchXhrRequest@http://192.168.29.46:3000/_next/static/chunks/node_modules_88b04ca1._.js:9813:9\n__TURBOPACK__default__export__<@http://192.168.29.46:3000/_next/static/chunks/node_modules_88b04ca1._.js:9739:12\ndispatchRequest@http://192.168.29.46:3000/_next/static/chunks/node_modules_88b04ca1._.js:10402:12\n_request@http://192.168.29.46:3000/_next/static/chunks/node_modules_88b04ca1._.js:10694:189\nrequest@http://192.168.29.46:3000/_next/static/chunks/node_modules_88b04ca1._.js:10572:31\nwrap@http://192.168.29.46:3000/_next/static/chunks/node_modules_88b04ca1._.js:7315:19\nsendRequest@http://192.168.29.46:3000/_next/static/chunks/_e969e2fc._.js:612:34\nrequest/<@http://192.168.29.46:3000/_next/static/chunks/_e969e2fc._.js:672:40\nasync*@http://192.168.29.46:3000/_next/static/chunks/_e969e2fc._.js:372:20\nCancelablePromise@http://192.168.29.46:3000/_next/static/chunks/_e969e2fc._.js:340:25\nrequest@http://192.168.29.46:3000/_next/static/chunks/_e969e2fc._.js:665:12\nproductApiListProducts@http://192.168.29.46:3000/_next/static/chunks/_e969e2fc._.js:711:160\nNavbar.useEffect.fetchProducts@http://192.168.29.46:3000/_next/static/chunks/components_f1d27bc1._.js:39:202\nNavbar.useEffect@http://192.168.29.46:3000/_next/static/chunks/components_f1d27bc1._.js:46:13\nreact_stack_bottom_frame@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:14876:22\nrunWithFiberInDEV@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:965:131\ncommitHookEffectListMount@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:7266:167\ncommitHookPassiveMountEffects@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:7301:60\ncommitPassiveMountOnFiber@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8696:33\nrecursivelyTraversePassiveMountEffects@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8683:316\ncommitPassiveMountOnFiber@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8757:55\nrecursivelyTraversePassiveMountEffects@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8683:316\ncommitPassiveMountOnFiber@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8695:55\nrecursivelyTraversePassiveMountEffects@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8683:316\ncommitPassiveMountOnFiber@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8757:55\nrecursivelyTraversePassiveMountEffects@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8683:316\ncommitPassiveMountOnFiber@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8757:55\nrecursivelyTraversePassiveMountEffects@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8683:316\ncommitPassiveMountOnFiber@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8695:55\nrecursivelyTraversePassiveMountEffects@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8683:316\ncommitPassiveMountOnFiber@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8700:55\nrecursivelyTraversePassiveMountEffects@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8683:316\ncommitPassiveMountOnFiber@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8695:55\nrecursivelyTraversePassiveMountEffects@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8683:316\ncommitPassiveMountOnFiber@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8700:55\nrecursivelyTraversePassiveMountEffects@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8683:316\ncommitPassiveMountOnFiber@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8695:55\nrecursivelyTraversePassiveMountEffects@http://192.168.29.46:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:8683:316\n"}
+[00:07:57.941] Server  LOG     ✓ Finished filesystem cache database compaction in 10.9s
+[00:11:19.904] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:11:19.904] Browser WARN    Image with src "http://192.168.29.46:3000/logo.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:11:19.904] Browser ERROR   uncaughtError: TypeError: products.filter is not a function
+[00:14:47.759] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:14:48.984] Browser WARN    Image with src "http://192.168.29.46:3000/logo.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:15:04.487] Server  LOG     ✓ Finished filesystem cache database compaction in 13.5s
+[00:15:20.841] Browser WARN    Image with src "/logo.png" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[00:15:31.975] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:15:31.976] Browser WARN    Image with src "http://192.168.29.46:3000/logo.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:16:10.872] Server  LOG     ○ Compiling /_not-found/page ...
+[00:16:19.198] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:16:30.511] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:16:30.899] Browser WARN    Image with src "http://192.168.29.46:3000/logo.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:18:11.292] Server  LOG     ○ Compiling /auth ...
+[00:18:39.683] Server  LOG     ✓ Finished filesystem cache database compaction in 12.9s
+[00:24:30.593] Server  LOG     ✓ Compiled in 1439ms
+[00:27:38.899] Server  LOG     ✓ Compiled in 2.4s
+[00:29:29.053] Server  LOG     ✓ Compiled in 1187ms
+[00:29:47.310] Server  LOG     ✓ Compiled in 1507ms
+[00:30:12.419] Server  LOG     ✓ Compiled in 298ms
+[00:30:29.309] Server  LOG     ✓ Compiled in 206ms
+[01:09:54.115] Server  LOG     ○ Compiling / ...
+[01:10:14.574] Server  LOG     ○ Compiling /software ...
+[01:10:50.690] Server  LOG     ✓ Finished writing to filesystem cache in 10.3s
+[01:26:14.177] Server  LOG     ✓ Compiled in 14.4s
+[01:27:37.001] Server  LOG     ✓ Compiled in 1040ms
