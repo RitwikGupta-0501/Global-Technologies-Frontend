@@ -2,15 +2,20 @@ import Navbar from "../../components/Navbar";
 import ProductGrid from "../../components/home/ProductGrid";
 
 async function getProducts() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/`, {
-    next: { revalidate: 300 },
-  });
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/`, {
+      next: { revalidate: 300 },
+    });
 
-  if (!res.ok) {
+    if (!res.ok) {
+      return [];
+    }
+    const data = await res.json();
+    return Array.isArray(data) ? data : (data.items || data.results || []);
+  } catch (err) {
+    console.warn("Failed to fetch products at render/build time:", err);
     return [];
   }
-  const data = await res.json();
-  return Array.isArray(data) ? data : (data.items || data.results || []);
 }
 
 export default async function SoftwarePage() {

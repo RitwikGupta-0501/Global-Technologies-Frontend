@@ -9,6 +9,12 @@ import { DefaultService } from "@/api/services/DefaultService";
 import { ApiError } from "@/api/core/ApiError";
 
 // --- Types for Razorpay ---
+interface RazorpayResponse {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+}
+
 interface RazorpayOptions {
   key: string;
   amount: number;
@@ -16,7 +22,7 @@ interface RazorpayOptions {
   name: string;
   description: string;
   order_id: string;
-  handler: (response: any) => void;
+  handler: (response: RazorpayResponse) => void;
   prefill: {
     name: string;
     email: string;
@@ -115,7 +121,7 @@ export default function GlobalCart() {
         name: "Global Technologies",
         description: `Order #${orderData.order_id}`,
         order_id: orderData.razorpay_order_id, // The critical Razorpay Order ID
-        handler: async function (response: any) {
+        handler: async function (response: RazorpayResponse) {
           // 4. Payment Success -> Call Backend: VERIFY
           try {
             await DefaultService.orderApiVerifyPayment({

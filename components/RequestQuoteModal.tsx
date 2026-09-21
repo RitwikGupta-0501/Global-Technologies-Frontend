@@ -171,7 +171,7 @@ export default function RequestQuoteModal() {
                   Request Quote
                 </h2>
                 <p className="text-sm text-slate-500">
-                  Tell us what you need, and we'll build a custom offer for you.
+                  Tell us what you need, and we&apos;ll build a custom offer for you.
                 </p>
               </div>
 

@@ -21,7 +21,7 @@ export default function Navbar() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data = await DefaultService.productApiListProducts() as any;
+        const data = (await DefaultService.productApiListProducts()) as unknown as { items?: ProductSchema[]; results?: ProductSchema[] } | ProductSchema[];
         const productsList = Array.isArray(data) ? data : (data.items || data.results || []);
         setProducts(productsList);
       } catch (error) {

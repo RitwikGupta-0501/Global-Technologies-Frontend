@@ -7,7 +7,6 @@ import { useRequestQuote } from "../context/RequestQuoteContext";
 import { ProductSchema } from "@/api/models/ProductSchema";
 import { getImageUrl } from "@/lib/utils";
 import {
-  Star,
   Check,
   ChevronRight,
   Minus,

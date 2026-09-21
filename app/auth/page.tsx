@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Navbar from "../../components/Navbar";
-import { Check, X } from "lucide-react"; // Import Icons for the validator
+import { Check } from "lucide-react"; // Import Icons for the validator
 
 import { useAuth } from "~/context/AuthContext";
 import { TokenService } from "@/api/services/TokenService";

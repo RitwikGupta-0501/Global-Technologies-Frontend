@@ -92,12 +92,14 @@ export default function CartSidebar({
   // Pre-fill User Info when Sidebar Opens
   useEffect(() => {
     if (user && isCartOpen) {
-      setFormData((prev) => ({
-        ...prev,
-        firstName: prev.firstName || user.first_name || "",
-        lastName: prev.lastName || user.last_name || "",
-        email: prev.email || user.email || "",
-      }));
+      queueMicrotask(() => {
+        setFormData((prev) => ({
+          ...prev,
+          firstName: prev.firstName || user.first_name || "",
+          lastName: prev.lastName || user.last_name || "",
+          email: prev.email || user.email || "",
+        }));
+      });
     }
   }, [user, isCartOpen]);
 
