@@ -9,9 +9,13 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { AddressSchema } from './models/AddressSchema';
 export type { AuthResponseSchema } from './models/AuthResponseSchema';
+export type { Input } from './models/Input';
 export type { OrderCreateSchema } from './models/OrderCreateSchema';
 export type { OrderInitSchema } from './models/OrderInitSchema';
+export type { OrderItemOutSchema } from './models/OrderItemOutSchema';
 export type { OrderItemSchema } from './models/OrderItemSchema';
+export type { OrderOutSchema } from './models/OrderOutSchema';
+export type { PagedProductSchema } from './models/PagedProductSchema';
 export type { PaymentVerifySchema } from './models/PaymentVerifySchema';
 export type { ProductSchema } from './models/ProductSchema';
 export type { QuoteInputSchema } from './models/QuoteInputSchema';
@@ -24,8 +28,10 @@ export type { TokenRefreshInputSchema } from './models/TokenRefreshInputSchema';
 export type { TokenRefreshOutputSchema } from './models/TokenRefreshOutputSchema';
 export type { TokenSchema } from './models/TokenSchema';
 export type { TokenVerifyInputSchema } from './models/TokenVerifyInputSchema';
+export type { UserLoginSchema } from './models/UserLoginSchema';
 export type { UserOutSchema } from './models/UserOutSchema';
 export type { UserRegisterSchema } from './models/UserRegisterSchema';
 
 export { DefaultService } from './services/DefaultService';
+export { SystemService } from './services/SystemService';
 export { TokenService } from './services/TokenService';

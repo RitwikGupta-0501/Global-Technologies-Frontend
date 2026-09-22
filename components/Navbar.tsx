@@ -181,12 +181,18 @@ export default function Navbar() {
 
             {user ? (
               <div className="flex items-center gap-4">
+                <Link
+                  href="/orders"
+                  className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors"
+                >
+                  My Orders
+                </Link>
                 <span className="hidden md:block text-sm font-semibold text-slate-700">
                   Hi, {user.first_name}
                 </span>
                 <button
                   onClick={logout}
-                  className="bg-slate-200 text-slate-700 px-5 py-2.5 rounded-full text-sm font-bold hover:bg-slate-300 transition-all"
+                  className="bg-slate-200 text-slate-700 px-5 py-2.5 rounded-full text-sm font-bold hover:bg-slate-300 transition-all cursor-pointer"
                 >
                   Logout
                 </button>
