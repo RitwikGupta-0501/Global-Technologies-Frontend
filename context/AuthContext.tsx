@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 import { OpenAPI } from "@/api/core/OpenAPI";
 import { DefaultService } from "@/api/services/DefaultService";
 import { UserOutSchema } from "@/api/models/UserOutSchema";
@@ -10,12 +11,14 @@ import { toast } from "sonner";
 
 // Initialize API for the Browser
 OpenAPI.BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+OpenAPI.WITH_CREDENTIALS = true;
+OpenAPI.CREDENTIALS = "include";
 
 interface AuthContextType {
   user: UserOutSchema | null;
   isLoading: boolean;
-  login: (access: string, refresh: string, user?: UserOutSchema) => void;
-  logout: () => void;
+  login: (access?: string, refresh?: string, userData?: UserOutSchema, redirectTo?: string) => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -25,63 +28,59 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  const login = (access: string, refresh: string, userData?: UserOutSchema) => {
-    sessionStorage.setItem("access_token", access);
-    sessionStorage.setItem("refresh_token", refresh);
-    OpenAPI.TOKEN = access;
-
+  const login = (
+    _access?: string,
+    _refresh?: string,
+    userData?: UserOutSchema,
+    redirectTo?: string
+  ) => {
+    // Pure HttpOnly cookie session: no tokens stored in client storage
     if (userData) {
       setUser(userData);
     } else {
-      // If we don't have user data yet, fetch it
       DefaultService.userApiGetMe().then(setUser).catch(console.error);
     }
 
     toast.success("Welcome back!");
-    router.push("/");
+    router.push(redirectTo || "/");
   };
 
-  const logout = useCallback(() => {
-    sessionStorage.removeItem("access_token");
-    sessionStorage.removeItem("refresh_token");
-    OpenAPI.TOKEN = undefined;
-    setUser(null);
-    toast.info("Logged out successfully");
-    router.push("/auth");
+  const logout = useCallback(async () => {
+    try {
+      await axios.post(`${OpenAPI.BASE}/api/auth/logout`, {}, { withCredentials: true });
+    } catch {
+      // Ignore network errors on logout
+    } finally {
+      setUser(null);
+      toast.info("Logged out successfully");
+      router.push("/auth");
+    }
   }, [router]);
 
   useEffect(() => {
     const initAuth = async () => {
-      const token = sessionStorage.getItem("access_token");
-      if (token) {
-        OpenAPI.TOKEN = token;
-        try {
-          // Fetch user details using the generated service
-          const userData = await DefaultService.userApiGetMe();
-          setUser(userData);
-        } catch (error) {
-          console.error("Session expired", error);
-          logout();
-        }
+      try {
+        // With HttpOnly cookies, calling /api/auth/me checks if the session cookie is valid
+        const userData = await DefaultService.userApiGetMe();
+        setUser(userData);
+      } catch {
+        setUser(null);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
     initAuth();
-  }, [logout]);
+  }, []);
 
   useEffect(() => {
-    // We pass the logout function so the interceptor can call it
-    // if the refresh token fails.
-    setupAxiosInterceptors(() => {
-      // We can't use the 'logout' const from the scope directly
-      // if it depends on state that might change, but here it's fine.
-      // However, to be safe, we just clear storage and redirect.
-      sessionStorage.removeItem("access_token");
-      sessionStorage.removeItem("refresh_token");
-      OpenAPI.TOKEN = undefined;
+    const interceptorId = setupAxiosInterceptors(() => {
       setUser(null);
-      window.location.href = "/auth"; // Force redirect
+      window.location.href = "/auth";
     });
+
+    return () => {
+      axios.interceptors.response.eject(interceptorId);
+    };
   }, []);
 
   return (

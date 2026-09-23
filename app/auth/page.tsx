@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Navbar from "../../components/Navbar";
 import { Check } from "lucide-react"; // Import Icons for the validator
 
 import { useAuth } from "~/context/AuthContext";
-import { TokenService } from "@/api/services/TokenService";
 import { DefaultService } from "@/api/services/DefaultService";
 import { ApiError } from "@/api";
 import { toast } from "sonner";
@@ -40,7 +40,9 @@ const PASSWORD_RULES = [
   },
 ];
 
-export default function AuthPage() {
+function AuthContent() {
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect') || '/';
   const { login } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
 
@@ -165,17 +167,17 @@ export default function AuthPage() {
     if (validateForm()) {
       try {
         if (isLogin) {
-          // --- LOGIN LOGIC ---
-          const response = await TokenService.tokenObtainPair({
-            username: formData.email,
+          // --- LOGIN LOGIC (Cookie-based auth) ---
+          const response = await DefaultService.userApiLogin({
+            email: formData.email,
             password: formData.password,
           });
-          login(response.access, response.refresh);
+          login(undefined, undefined, response.user, redirectUrl);
         } else {
           // --- REGISTER LOGIC ---
           const nameParts = formData.fullName.trim().split(" ");
           const firstName = nameParts[0];
-          const lastName = nameParts.slice(1).join(" ") || ".";
+          const lastName = nameParts.slice(1).join(" ") || "";
 
           const response = await DefaultService.userApiRegisterUser({
             email: formData.email,
@@ -188,9 +190,10 @@ export default function AuthPage() {
 
           if (response.tokens) {
             login(
-              response.tokens.access,
-              response.tokens.refresh,
+              undefined,
+              undefined,
               response.user,
+              redirectUrl,
             );
           } else {
             toast.success("Account created! Please log in.");
@@ -504,5 +507,14 @@ export default function AuthPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center text-slate-500">Loading...</div>}>
+      <AuthContent />
+    </Suspense>
   );
 }

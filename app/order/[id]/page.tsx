@@ -174,10 +174,10 @@ export default function OrderDetailPage({
 
               <div className="sm:text-right">
                 <span className="text-xs font-bold text-blue-600 tracking-widest uppercase block">
-                  TAX INVOICE
+                  {order.status === "PAID" ? "TAX INVOICE" : "ORDER SUMMARY"}
                 </span>
                 <span className="text-2xl font-black text-slate-900 mt-1 block">
-                  #INV-GT-{order.id}
+                  {order.status === "PAID" ? `#INV-GT-${order.id}` : `#ORD-GT-${order.id}`}
                 </span>
                 <div className="mt-2 flex items-center sm:justify-end gap-2">
                   {getStatusBadge(order.status)}

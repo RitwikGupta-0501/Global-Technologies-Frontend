@@ -12,24 +12,42 @@ export default function Navbar() {
   const { cart, setIsCartOpen } = useCart();
   const { user, logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
-  const [products, setProducts] = useState<ProductSchema[]>([]);
+  const [searchResults, setSearchResults] = useState<ProductSchema[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
   const cartCount = cart.length;
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const query = searchQuery.trim();
+    if (!query) {
+      setSearchResults([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setIsSearching(true);
       try {
-        const data = (await DefaultService.productApiListProducts()) as unknown as { items?: ProductSchema[]; results?: ProductSchema[] } | ProductSchema[];
-        const productsList = Array.isArray(data) ? data : (data.items || data.results || []);
-        setProducts(productsList);
+        const data = await DefaultService.productApiListProducts(
+          undefined,
+          undefined,
+          undefined,
+          query,
+          1,
+          5
+        );
+        const list = Array.isArray(data) ? data : (data.items || (data as any).results || []);
+        setSearchResults(list);
       } catch (error) {
-        console.error("Failed to fetch products for search", error);
+        console.error("Failed to search products", error);
+      } finally {
+        setIsSearching(false);
       }
-    };
-    fetchProducts();
-  }, []);
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -40,14 +58,6 @@ export default function Navbar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const filteredProducts = products
-    .filter(
-      (p) =>
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.description.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .slice(0, 5); // Limit to top 5 results
 
   return (
     <nav className="fixed w-full z-50 panel-clean">
@@ -107,9 +117,13 @@ export default function Navbar() {
             {/* Live Search Dropdown */}
             {isSearchOpen && searchQuery.trim() !== "" && (
               <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50">
-                {filteredProducts.length > 0 ? (
+                {isSearching ? (
+                  <div className="px-4 py-6 text-center text-slate-400 text-sm">
+                    Searching products...
+                  </div>
+                ) : searchResults.length > 0 ? (
                   <ul className="py-2">
-                    {filteredProducts.map((p) => (
+                    {searchResults.map((p) => (
                       <li key={p.id}>
                         <Link
                           href={`/product/${p.id}-${p.slug}`}
@@ -128,7 +142,7 @@ export default function Navbar() {
                             </p>
                           </div>
                           <span className="text-sm font-bold text-slate-900 ml-4 whitespace-nowrap">
-                            {p.price_type === "quote" ? "Quote" : `$${p.price}`}
+                            {p.price_type === "quote" ? "Quote" : `₹${p.price}`}
                           </span>
                         </Link>
                       </li>

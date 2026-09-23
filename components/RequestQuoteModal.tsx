@@ -33,15 +33,7 @@ export default function RequestQuoteModal() {
   const isDetailPage =
     selectedProduct && pathname === `/product/${selectedProduct.id}`;
 
-  // --- NEW: Authentication Protection ---
-  useEffect(() => {
-    // Only run this check if the modal is trying to open
-    if (isOpen && !isLoading && !user) {
-      toast.error("Please log in to request a quote");
-      closeQuoteModal(); // Close the modal immediately
-      router.push("/auth"); // Redirect to login
-    }
-  }, [isOpen, isLoading, user, router, closeQuoteModal]);
+  // Guest RFQ allowed: optional user auto-fill if authenticated
 
   // Auto-fill user details when modal opens
   useEffect(() => {
@@ -58,22 +50,30 @@ export default function RequestQuoteModal() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.message.trim() || formData.message.trim().length < 20) {
+      toast.error("Please provide at least 20 characters in your requirements description.");
+      return;
+    }
     setLoading(true);
 
     try {
       await DefaultService.quotesApiCreateQuoteRequest({
         product_id: selectedProduct.id,
         email: formData.email,
-        phone: formData.phone,
+        phone: formData.phone.trim() || undefined,
         quantity: Number(formData.quantity),
-        message: formData.message,
+        message: formData.message.trim(),
       });
 
       setStep("success");
       toast.success("Quote request received!");
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      toast.error("Failed to submit request. Please try again.");
+      const detail = error?.body?.detail;
+      const errorMsg = Array.isArray(detail)
+        ? detail.map((d: any) => d.msg).join(", ")
+        : error?.body?.message || "Failed to submit request. Please try again.";
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -247,12 +247,19 @@ export default function RequestQuoteModal() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    Requirements
-                  </label>
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                      Requirements <span className="text-red-500">*</span>
+                    </label>
+                    <span className={`text-[10px] ${formData.message.length >= 20 ? "text-emerald-600" : "text-slate-400"}`}>
+                      {formData.message.length}/20 min characters
+                    </span>
+                  </div>
                   <textarea
+                    required
+                    minLength={20}
                     rows={3}
-                    placeholder="E.g. I need these for a new office setup..."
+                    placeholder="E.g. I need these for a new office setup with 50 workstations..."
                     value={formData.message}
                     onChange={(e) =>
                       setFormData({ ...formData, message: e.target.value })
