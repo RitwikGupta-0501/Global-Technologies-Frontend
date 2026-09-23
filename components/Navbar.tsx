@@ -37,7 +37,8 @@ export default function Navbar() {
           1,
           5
         );
-        const list = Array.isArray(data) ? data : (data.items || (data as any).results || []);
+        const responseObj = data as { items?: ProductSchema[]; results?: ProductSchema[] } | ProductSchema[];
+        const list = Array.isArray(responseObj) ? responseObj : (responseObj.items || responseObj.results || []);
         setSearchResults(list);
       } catch (error) {
         console.error("Failed to search products", error);

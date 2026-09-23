@@ -116,7 +116,7 @@ export default function GlobalCart() {
       // 3. Open Razorpay Popup
       const options: RazorpayOptions = {
         key: orderData.key_id, // Public Key from backend response
-        amount: orderData.amount * 100, // Amount in paise
+        amount: (orderData as { amount_paise?: number; amount: number }).amount_paise ?? Math.round(orderData.amount * 100), // Precise integer amount in paise
         currency: orderData.currency,
         name: "Global Technologies",
         description: `Order #${orderData.order_id}`,

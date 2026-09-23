@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation"; // <--- Updated Import (Added useRouter)
+import { usePathname } from "next/navigation";
 import { X, Check, Loader2, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { useRequestQuote } from "../context/RequestQuoteContext";
@@ -13,9 +13,8 @@ import { DefaultService } from "@/api/services/DefaultService";
 
 export default function RequestQuoteModal() {
   const { isOpen, selectedProduct, closeQuoteModal } = useRequestQuote();
-  const { user, isLoading } = useAuth(); // <--- Get isLoading to prevent premature redirects
+  const { user } = useAuth();
   const pathname = usePathname();
-  const router = useRouter(); // <--- Initialize Router
 
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<"form" | "success">("form");
@@ -67,12 +66,13 @@ export default function RequestQuoteModal() {
 
       setStep("success");
       toast.success("Quote request received!");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      const detail = error?.body?.detail;
+      const apiErr = error as { body?: { detail?: Array<{ msg?: string }> | string; message?: string } };
+      const detail = apiErr?.body?.detail;
       const errorMsg = Array.isArray(detail)
-        ? detail.map((d: any) => d.msg).join(", ")
-        : error?.body?.message || "Failed to submit request. Please try again.";
+        ? detail.map((d) => d.msg || "").filter(Boolean).join(", ")
+        : (typeof detail === "string" ? detail : apiErr?.body?.message) || "Failed to submit request. Please try again.";
       toast.error(errorMsg);
     } finally {
       setLoading(false);

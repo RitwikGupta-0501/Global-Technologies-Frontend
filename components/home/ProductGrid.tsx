@@ -28,11 +28,13 @@ export default function ProductGrid({ products, initialCategory = "All Products"
   const brands = useMemo(() => {
     const brandSet = new Set<string>();
     productsInCategory.forEach(p => {
-      // Very naive brand extraction: first word of name or specs.brand
       if (p.specs && p.specs.brand) {
         brandSet.add(p.specs.brand);
       } else {
-        brandSet.add(p.name.split(" ")[0]);
+        const name = p.name.trim();
+        const knownBrands = ["Quick Heal", "Red Hat", "Microsoft", "Cisco", "Dell", "HP", "Lenovo", "Apple", "Sophos", "Fortinet"];
+        const matched = knownBrands.find(b => name.toLowerCase().startsWith(b.toLowerCase()));
+        brandSet.add(matched || name.split(" ")[0]);
       }
     });
     return ["All Brands", ...Array.from(brandSet).sort()];
@@ -59,7 +61,13 @@ export default function ProductGrid({ products, initialCategory = "All Products"
   const filteredProducts = useMemo(() => {
     return productsInCategory.filter(p => {
       // Filter by Brand
-      const brand = (p.specs && p.specs.brand) ? p.specs.brand : p.name.split(" ")[0];
+      const brand = (() => {
+        if (p.specs && p.specs.brand) return p.specs.brand;
+        const name = p.name.trim();
+        const knownBrands = ["Quick Heal", "Red Hat", "Microsoft", "Cisco", "Dell", "HP", "Lenovo", "Apple", "Sophos", "Fortinet"];
+        const matched = knownBrands.find(b => name.toLowerCase().startsWith(b.toLowerCase()));
+        return matched || name.split(" ")[0];
+      })();
       if (selectedBrand !== "All Brands" && brand !== selectedBrand) return false;
 
       // Filter by Type
@@ -156,7 +164,7 @@ export default function ProductGrid({ products, initialCategory = "All Products"
 
               <div>
                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
-                  Max Price: ${currentMaxPrice}
+                  Max Price: ₹{currentMaxPrice}
                 </h4>
                 <div className="pt-2">
                   <input
@@ -169,8 +177,8 @@ export default function ProductGrid({ products, initialCategory = "All Products"
                     className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
                   />
                   <div className="flex justify-between text-xs text-slate-400 mt-2">
-                    <span>$0</span>
-                    <span>${maxAvailablePrice}</span>
+                    <span>₹0</span>
+                    <span>₹{maxAvailablePrice}</span>
                   </div>
                 </div>
               </div>

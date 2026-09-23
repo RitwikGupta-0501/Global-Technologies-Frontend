@@ -42,7 +42,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     toast.success("Welcome back!");
-    router.push(redirectTo || "/");
+    const safeTarget =
+      redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")
+        ? redirectTo
+        : "/";
+    router.push(safeTarget);
   };
 
   const logout = useCallback(async () => {
@@ -75,7 +79,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const interceptorId = setupAxiosInterceptors(() => {
       setUser(null);
-      window.location.href = "/auth";
     });
 
     return () => {

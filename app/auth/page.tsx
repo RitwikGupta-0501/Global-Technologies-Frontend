@@ -42,7 +42,11 @@ const PASSWORD_RULES = [
 
 function AuthContent() {
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get('redirect') || '/';
+  const rawRedirect = searchParams.get('redirect');
+  const redirectUrl =
+    rawRedirect && rawRedirect.startsWith("/") && !rawRedirect.startsWith("//")
+      ? rawRedirect
+      : "/";
   const { login } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
 
