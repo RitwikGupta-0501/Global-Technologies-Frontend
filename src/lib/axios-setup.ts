@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import axios from "axios";
 import { OpenAPI } from "@/api/core/OpenAPI";
 
@@ -44,7 +45,25 @@ export const setupAxiosInterceptors = (onLogout: () => void): number => {
         return Promise.reject(error);
       }
 
-      // 2. Catch 401 errors
+      // 2. Catch 429 Rate Limit errors
+      if (error.response?.status === 429) {
+        const retryAfter =
+          error.response.data?.retry_after ??
+          (error.response.headers?.["retry-after"]
+            ? parseInt(error.response.headers["retry-after"], 10)
+            : 60);
+
+        toast.error(
+          `Too many requests. Please wait ${retryAfter} second${retryAfter === 1 ? "" : "s"} before trying again.`,
+          {
+            id: "rate-limit-error",
+            duration: 5000,
+          },
+        );
+        return Promise.reject(error);
+      }
+
+      // 3. Catch 401 errors
       if (error.response?.status === 401 && !originalRequest._retry) {
         if (isRefreshing) {
           // If already refreshing, queue this request
