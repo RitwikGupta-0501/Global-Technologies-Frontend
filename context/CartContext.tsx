@@ -9,8 +9,7 @@ import React, {
   useEffect,
   Dispatch,
   SetStateAction,
-  useLayoutEffect,
-} from "react";
+  } from "react";
 import { ProductSchema } from "@/api/models/ProductSchema";
 
 // Define the shape of your context
@@ -44,7 +43,7 @@ function useLocalStorageCart(
 ): [CartItem[], Dispatch<SetStateAction<CartItem[]>>] {
   const [cart, setCart] = useState<CartItem[]>(defaultValue);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (typeof window !== "undefined") {
       try {
         const saved = localStorage.getItem("cart");

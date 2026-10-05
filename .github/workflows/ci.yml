@@ -1,0 +1,33 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [ main, production-deploy ]
+  pull_request:
+    branches: [ main, production-deploy ]
+
+jobs:
+  lint-and-build:
+    name: Lint & Build Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: bun install
+
+      - name: Run ESLint
+        run: bun run lint
+
+      - name: Build Next.js Application
+        env:
+          NEXT_PUBLIC_API_URL: "http://localhost:8000"
+          NEXT_PUBLIC_RAZORPAY_KEY_ID: "rzp_test_placeholder"
+        run: bun run build

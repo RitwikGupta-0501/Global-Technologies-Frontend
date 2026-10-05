@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation"; // <--- Updated Import (Added useRouter)
+import { usePathname } from "next/navigation";
 import { X, Check, Loader2, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { useRequestQuote } from "../context/RequestQuoteContext";
@@ -13,9 +13,8 @@ import { DefaultService } from "@/api/services/DefaultService";
 
 export default function RequestQuoteModal() {
   const { isOpen, selectedProduct, closeQuoteModal } = useRequestQuote();
-  const { user, isLoading } = useAuth(); // <--- Get isLoading to prevent premature redirects
+  const { user } = useAuth();
   const pathname = usePathname();
-  const router = useRouter(); // <--- Initialize Router
 
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<"form" | "success">("form");
@@ -27,21 +26,14 @@ export default function RequestQuoteModal() {
     phone: "",
     quantity: 1,
     message: "",
+    website: "",
   });
 
   // Check if we are already on the product page
   const isDetailPage =
     selectedProduct && pathname === `/product/${selectedProduct.id}`;
 
-  // --- NEW: Authentication Protection ---
-  useEffect(() => {
-    // Only run this check if the modal is trying to open
-    if (isOpen && !isLoading && !user) {
-      toast.error("Please log in to request a quote");
-      closeQuoteModal(); // Close the modal immediately
-      router.push("/auth"); // Redirect to login
-    }
-  }, [isOpen, isLoading, user, router, closeQuoteModal]);
+  // Guest RFQ allowed: optional user auto-fill if authenticated
 
   // Auto-fill user details when modal opens
   useEffect(() => {
@@ -58,22 +50,32 @@ export default function RequestQuoteModal() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.message.trim() || formData.message.trim().length < 20) {
+      toast.error("Please provide at least 20 characters in your requirements description.");
+      return;
+    }
     setLoading(true);
 
     try {
       await DefaultService.quotesApiCreateQuoteRequest({
         product_id: selectedProduct.id,
         email: formData.email,
-        phone: formData.phone,
+        phone: formData.phone.trim() || undefined,
         quantity: Number(formData.quantity),
-        message: formData.message,
+        message: formData.message.trim(),
+        website: formData.website || undefined,
       });
 
       setStep("success");
       toast.success("Quote request received!");
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error);
-      toast.error("Failed to submit request. Please try again.");
+      const apiErr = error as { body?: { detail?: Array<{ msg?: string }> | string; message?: string } };
+      const detail = apiErr?.body?.detail;
+      const errorMsg = Array.isArray(detail)
+        ? detail.map((d) => d.msg || "").filter(Boolean).join(", ")
+        : (typeof detail === "string" ? detail : apiErr?.body?.message) || "Failed to submit request. Please try again.";
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -101,6 +103,18 @@ export default function RequestQuoteModal() {
         >
           <X className="w-5 h-5" />
         </button>
+
+        {/* Honeypot field for automated spam bots */}
+        <input
+          type="text"
+          name="website"
+          value={formData.website}
+          onChange={(e) => setFormData((prev) => ({ ...prev, website: e.target.value }))}
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          style={{ display: "none", position: "absolute", left: "-9999px" }}
+        />
 
         {step === "success" ? (
           // --- SUCCESS STATE ---
@@ -171,7 +185,7 @@ export default function RequestQuoteModal() {
                   Request Quote
                 </h2>
                 <p className="text-sm text-slate-500">
-                  Tell us what you need, and we'll build a custom offer for you.
+                  Tell us what you need, and we&apos;ll build a custom offer for you.
                 </p>
               </div>
 
@@ -247,12 +261,19 @@ export default function RequestQuoteModal() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    Requirements
-                  </label>
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                      Requirements <span className="text-red-500">*</span>
+                    </label>
+                    <span className={`text-[10px] ${formData.message.length >= 20 ? "text-emerald-600" : "text-slate-400"}`}>
+                      {formData.message.length}/20 min characters
+                    </span>
+                  </div>
                   <textarea
+                    required
+                    minLength={20}
                     rows={3}
-                    placeholder="E.g. I need these for a new office setup..."
+                    placeholder="E.g. I need these for a new office setup with 50 workstations..."
                     value={formData.message}
                     onChange={(e) =>
                       setFormData({ ...formData, message: e.target.value })

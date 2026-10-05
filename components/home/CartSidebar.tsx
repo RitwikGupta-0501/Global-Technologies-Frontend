@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   X,
   Plus,
@@ -92,12 +93,14 @@ export default function CartSidebar({
   // Pre-fill User Info when Sidebar Opens
   useEffect(() => {
     if (user && isCartOpen) {
-      setFormData((prev) => ({
-        ...prev,
-        firstName: prev.firstName || user.first_name || "",
-        lastName: prev.lastName || user.last_name || "",
-        email: prev.email || user.email || "",
-      }));
+      queueMicrotask(() => {
+        setFormData((prev) => ({
+          ...prev,
+          firstName: prev.firstName || user.first_name || "",
+          lastName: prev.lastName || user.last_name || "",
+          email: prev.email || user.email || "",
+        }));
+      });
     }
   }, [user, isCartOpen]);
 
@@ -179,12 +182,21 @@ export default function CartSidebar({
                   confirmation shortly.
                 </p>
               </div>
-              <button
-                onClick={onReset}
-                className="px-8 py-3 bg-slate-900 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
-              >
-                Continue Shopping
-              </button>
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-sm px-2">
+                <Link
+                  href="/orders"
+                  onClick={onReset}
+                  className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:bg-blue-700 hover:shadow-lg transition-all text-center text-sm"
+                >
+                  View My Orders
+                </Link>
+                <button
+                  onClick={onReset}
+                  className="w-full py-3 bg-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-300 transition-all text-sm cursor-pointer"
+                >
+                  Continue Shopping
+                </button>
+              </div>
             </div>
           ) : cart.length === 0 ? (
             // --- EMPTY CART VIEW ---
@@ -638,7 +650,7 @@ export default function CartSidebar({
                           <Plus size={12} />
                         </button>
                       </div>
-                      <span className="font-bold text-slate-900">
+                      <span className="font-bold text-slate-900 tabular-nums">
                         {formatPrice(Number(item.price) * item.qty)}
                       </span>
                     </div>
@@ -654,7 +666,7 @@ export default function CartSidebar({
           <div className="p-5 border-t border-slate-100 bg-white">
             <div className="flex justify-between items-end mb-4">
               <span className="text-slate-500 font-medium">Subtotal</span>
-              <span className="text-2xl font-bold text-slate-900">
+              <span className="text-2xl font-extrabold text-slate-900 tabular-nums tracking-tight">
                 {formatPrice(cartTotal)}
               </span>
             </div>

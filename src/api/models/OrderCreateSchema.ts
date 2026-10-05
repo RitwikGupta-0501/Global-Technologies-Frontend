@@ -9,11 +9,11 @@ export type OrderCreateSchema = {
     last_name: string;
     email: string;
     phone: string;
-    company_name: (string | null);
-    gstin: (string | null);
+    company_name?: (string | null);
+    gstin?: (string | null);
     billing_address: AddressSchema;
     shipping_address: AddressSchema;
     items: Array<OrderItemSchema>;
     save_info?: boolean;
+    idempotency_key?: (string | null);
 };
-

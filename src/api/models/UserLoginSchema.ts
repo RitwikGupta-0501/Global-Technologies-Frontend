@@ -2,12 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type QuoteInputSchema = {
-    product_id: number;
+export type UserLoginSchema = {
     email: string;
-    phone?: string;
-    quantity?: number;
-    message?: string;
-    website?: string;
+    password: string;
 };
 

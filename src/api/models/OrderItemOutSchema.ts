@@ -2,12 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type QuoteInputSchema = {
+export type OrderItemOutSchema = {
+    id: number;
     product_id: number;
-    email: string;
-    phone?: string;
-    quantity?: number;
-    message?: string;
-    website?: string;
+    product_name: string;
+    quantity: number;
+    price_at_purchase: number;
 };
 

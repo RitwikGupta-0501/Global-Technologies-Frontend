@@ -9,6 +9,12 @@ import { DefaultService } from "@/api/services/DefaultService";
 import { ApiError } from "@/api/core/ApiError";
 
 // --- Types for Razorpay ---
+interface RazorpayResponse {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+}
+
 interface RazorpayOptions {
   key: string;
   amount: number;
@@ -16,7 +22,7 @@ interface RazorpayOptions {
   name: string;
   description: string;
   order_id: string;
-  handler: (response: any) => void;
+  handler: (response: RazorpayResponse) => void;
   prefill: {
     name: string;
     email: string;
@@ -24,6 +30,9 @@ interface RazorpayOptions {
   };
   theme: {
     color: string;
+  };
+  modal?: {
+    ondismiss?: () => void;
   };
 }
 
@@ -81,8 +90,12 @@ export default function GlobalCart() {
         return;
       }
 
+      // 1. Generate Idempotency Key to prevent duplicate submissions
+      const idempotencyKey = typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `idemp_${Date.now()}`;
+
       // 2. Call Backend: INITIATE ORDER
       const orderData = await DefaultService.orderApiInitiateOrder({
+        idempotency_key: idempotencyKey,
         first_name: formData.firstName,
         last_name: formData.lastName,
         email: formData.email,
@@ -110,12 +123,12 @@ export default function GlobalCart() {
       // 3. Open Razorpay Popup
       const options: RazorpayOptions = {
         key: orderData.key_id, // Public Key from backend response
-        amount: orderData.amount * 100, // Amount in paise
+        amount: (orderData as { amount_paise?: number; amount: number }).amount_paise ?? Math.round(Number(orderData.amount) * 100), // Precise integer amount in paise
         currency: orderData.currency,
         name: "Global Technologies",
         description: `Order #${orderData.order_id}`,
         order_id: orderData.razorpay_order_id, // The critical Razorpay Order ID
-        handler: async function (response: any) {
+        handler: async function (response: RazorpayResponse) {
           // 4. Payment Success -> Call Backend: VERIFY
           try {
             await DefaultService.orderApiVerifyPayment({
@@ -140,6 +153,12 @@ export default function GlobalCart() {
         },
         theme: {
           color: "#0f172a", // Slate-900 (Matches your brand)
+        },
+        modal: {
+          ondismiss: () => {
+            setLoading(false);
+            toast.info("Payment window closed. Your order is reserved and you may retry.");
+          },
         },
       };
 

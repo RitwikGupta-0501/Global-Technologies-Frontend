@@ -5,8 +5,8 @@
 export type OrderInitSchema = {
     order_id: number;
     razorpay_order_id: string;
-    amount: number;
+    amount: number | string;
+    amount_paise?: number;
     currency: string;
     key_id: string;
 };
-

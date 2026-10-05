@@ -1,46 +1,79 @@
+import { toast } from "sonner";
 import axios from "axios";
 import { OpenAPI } from "@/api/core/OpenAPI";
-import { TokenService } from "@/api/services/TokenService";
+
+interface QueuedRequest {
+  resolve: () => void;
+  reject: (error: unknown) => void;
+}
 
 // Queue to hold requests while refreshing
 let isRefreshing = false;
-let failedQueue: any[] = [];
+let failedQueue: QueuedRequest[] = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: unknown) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
     } else {
-      prom.resolve(token);
+      prom.resolve();
     }
   });
   failedQueue = [];
 };
 
-export const setupAxiosInterceptors = (onLogout: () => void) => {
-  // Clear existing interceptors to avoid duplicates if this runs twice
-  // (Note: axios.interceptors.response.eject is complex to track,
-  // so we assume this runs once in AuthProvider)
+export const setupAxiosInterceptors = (onLogout: () => void): number => {
+  // Ensure default axios sends cookies and Anti-CSRF header
+  axios.defaults.withCredentials = true;
+  axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
+  OpenAPI.HEADERS = { "X-Requested-With": "XMLHttpRequest" };
 
-  axios.interceptors.response.use(
+  const interceptorId = axios.interceptors.response.use(
     (response) => response,
     async (error) => {
       const originalRequest = error.config;
 
-      // 1. Skip if it's the refresh call itself (prevent infinite loops)
-      if (originalRequest.url?.includes("/token/refresh")) {
+      if (!originalRequest) {
         return Promise.reject(error);
       }
 
-      // 2. Catch 401 errors
+      // 1. Skip if it's the auth endpoints themselves (prevent loops)
+      if (
+        originalRequest.url?.includes("/auth/refresh") ||
+        originalRequest.url?.includes("/auth/login") ||
+        originalRequest.url?.includes("/auth/logout") ||
+        originalRequest.url?.includes("/auth/register")
+      ) {
+        return Promise.reject(error);
+      }
+
+      // 2. Catch 429 Rate Limit errors
+      if (error.response?.status === 429) {
+        const retryAfter =
+          error.response.data?.retry_after ??
+          (error.response.headers?.["retry-after"]
+            ? parseInt(error.response.headers["retry-after"], 10)
+            : 60);
+
+        toast.error(
+          `Too many requests. Please wait ${retryAfter} second${retryAfter === 1 ? "" : "s"} before trying again.`,
+          {
+            id: "rate-limit-error",
+            duration: 5000,
+          },
+        );
+        return Promise.reject(error);
+      }
+
+      // 3. Catch 401 errors
       if (error.response?.status === 401 && !originalRequest._retry) {
         if (isRefreshing) {
           // If already refreshing, queue this request
-          return new Promise(function (resolve, reject) {
+          return new Promise<void>((resolve, reject) => {
             failedQueue.push({ resolve, reject });
           })
-            .then((token) => {
-              originalRequest.headers["Authorization"] = "Bearer " + token;
+            .then(() => {
+              originalRequest.withCredentials = true;
               return axios(originalRequest);
             })
             .catch((err) => {
@@ -51,42 +84,20 @@ export const setupAxiosInterceptors = (onLogout: () => void) => {
         originalRequest._retry = true;
         isRefreshing = true;
 
-        const refreshToken = sessionStorage.getItem("refresh_token");
-
-        if (!refreshToken) {
-          isRefreshing = false;
-          onLogout();
-          return Promise.reject(error);
-        }
-
         try {
-          // 3. Attempt Refresh
-          const response = await TokenService.tokenRefresh({
-            refresh: refreshToken,
-          });
+          // 3. Attempt Refresh via backend HttpOnly cookie endpoint
+          const refreshUrl = `${OpenAPI.BASE}/api/auth/refresh`;
+          await axios.post(refreshUrl, {}, { withCredentials: true, headers: { "X-Requested-With": "XMLHttpRequest" } });
 
-          // 4. Update Storage & Config
-          const newAccess = response.access;
-          const newRefresh = response.refresh; // If rotation is enabled
-          if (!newAccess) {
-            throw new Error("No access token received from refresh");
-          }
-          sessionStorage.setItem("access_token", newAccess);
+          // 4. Retry queued requests
+          processQueue(null);
 
-          if (newRefresh) {
-            sessionStorage.setItem("refresh_token", newRefresh);
-          }
-          OpenAPI.TOKEN = newAccess;
-
-          // 5. Retry queued requests
-          processQueue(null, newAccess);
-
-          // 6. Retry original request
-          originalRequest.headers["Authorization"] = "Bearer " + newAccess;
+          // 5. Retry original request with credentials
+          originalRequest.withCredentials = true;
           return axios(originalRequest);
         } catch (refreshError) {
-          // Refresh failed (token expired or revoked) -> Logout user
-          processQueue(refreshError, null);
+          // Refresh failed (cookie expired or revoked) -> Logout user
+          processQueue(refreshError);
           onLogout();
           return Promise.reject(refreshError);
         } finally {
@@ -97,4 +108,6 @@ export const setupAxiosInterceptors = (onLogout: () => void) => {
       return Promise.reject(error);
     },
   );
+
+  return interceptorId;
 };
