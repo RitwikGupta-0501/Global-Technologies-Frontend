@@ -1,7 +1,9 @@
 import Navbar from "../components/Navbar";
 import HeroSection from "../components/home/HeroSection";
+import TrustPillars from "../components/home/TrustPillars";
 import HighlightsSection from "../components/home/HighlightsSection";
 import ProductGrid from "../components/home/ProductGrid";
+import Footer from "../components/Footer";
 
 async function getProducts() {
   try {
@@ -23,29 +25,21 @@ async function getProducts() {
 }
 
 export default async function Home() {
-  // --- 1. Mock Data ---
   const products = await getProducts();
 
   return (
-    <main className="min-h-screen bg-slate-50 font-sans">
+    <main className="min-h-screen bg-[#f8fafc] text-slate-700 font-sans relative selection:bg-blue-600 selection:text-white">
       <Navbar />
 
       <HeroSection />
+      <TrustPillars />
       <HighlightsSection />
 
-      <ProductGrid products={products} />
+      <div id="catalog">
+        <ProductGrid products={products} />
+      </div>
 
-      {/* Footer */}
-      <footer className="bg-slate-900 text-slate-400 py-16 border-t border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <span className="text-white font-bold text-2xl">GLOBAL TECHNOLOGIES</span>
-            <p className="mt-4 text-sm text-slate-500">
-              &copy; 2025 Global Technologies. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }

@@ -4,6 +4,7 @@ import React, { useEffect, useState, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "~/components/Navbar";
+import Footer from "~/components/Footer";
 import { useAuth } from "~/context/AuthContext";
 import { DefaultService } from "@/api/services/DefaultService";
 import type { OrderOutSchema } from "@/api/models/OrderOutSchema";
@@ -177,7 +178,7 @@ export default function OrderDetailPage({
                   {order.status === "PAID" ? "TAX INVOICE" : "ORDER SUMMARY"}
                 </span>
                 <span className="text-2xl font-black text-slate-900 mt-1 block">
-                  {order.status === "PAID" ? `#INV-GT-${order.id}` : `#ORD-GT-${order.id}`}
+                  {order.invoice_number || (order.status === "PAID" ? `#INV-GT-${order.id}` : `#ORD-GT-${order.id}`)}
                 </span>
                 <div className="mt-2 flex items-center sm:justify-end gap-2">
                   {getStatusBadge(order.status)}
@@ -284,12 +285,14 @@ export default function OrderDetailPage({
                   <div className="flex justify-between text-slate-600">
                     <span>Subtotal</span>
                     <span className="font-semibold text-slate-900">
-                      ₹{Number(order.total_amount).toLocaleString("en-IN")}
+                      ₹{Number(order.subtotal ?? order.total_amount).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
                   <div className="flex justify-between text-slate-600">
-                    <span>Applicable Taxes (GST)</span>
-                    <span className="font-semibold text-slate-900">Included</span>
+                    <span>GST (18% Included)</span>
+                    <span className="font-semibold text-slate-900">
+                      {order.tax_amount ? `₹${Number(order.tax_amount).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "Included"}
+                    </span>
                   </div>
                   <div className="flex justify-between pt-3 border-t border-slate-200 text-base font-black text-slate-900">
                     <span>Total Paid</span>
@@ -310,6 +313,7 @@ export default function OrderDetailPage({
           </div>
         )}
       </div>
+      <Footer />
     </main>
   );
 }

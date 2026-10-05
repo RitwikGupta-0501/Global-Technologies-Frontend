@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "~/components/Navbar";
+import Footer from "~/components/Footer";
 import { useAuth } from "~/context/AuthContext";
 import { DefaultService } from "@/api/services/DefaultService";
 import type { OrderOutSchema } from "@/api/models/OrderOutSchema";
@@ -293,6 +294,7 @@ export default function OrdersPage() {
           </div>
         )}
       </div>
+      <Footer />
     </main>
   );
 }

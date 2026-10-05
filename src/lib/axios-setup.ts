@@ -23,8 +23,10 @@ const processQueue = (error: unknown) => {
 };
 
 export const setupAxiosInterceptors = (onLogout: () => void): number => {
-  // Ensure default axios sends cookies
+  // Ensure default axios sends cookies and Anti-CSRF header
   axios.defaults.withCredentials = true;
+  axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
+  OpenAPI.HEADERS = { "X-Requested-With": "XMLHttpRequest" };
 
   const interceptorId = axios.interceptors.response.use(
     (response) => response,
@@ -85,7 +87,7 @@ export const setupAxiosInterceptors = (onLogout: () => void): number => {
         try {
           // 3. Attempt Refresh via backend HttpOnly cookie endpoint
           const refreshUrl = `${OpenAPI.BASE}/api/auth/refresh`;
-          await axios.post(refreshUrl, {}, { withCredentials: true });
+          await axios.post(refreshUrl, {}, { withCredentials: true, headers: { "X-Requested-With": "XMLHttpRequest" } });
 
           // 4. Retry queued requests
           processQueue(null);

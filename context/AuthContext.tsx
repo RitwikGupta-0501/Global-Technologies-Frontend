@@ -13,12 +13,16 @@ import { toast } from "sonner";
 OpenAPI.BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 OpenAPI.WITH_CREDENTIALS = true;
 OpenAPI.CREDENTIALS = "include";
+OpenAPI.HEADERS = { "X-Requested-With": "XMLHttpRequest" };
+axios.defaults.withCredentials = true;
+axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
 interface AuthContextType {
   user: UserOutSchema | null;
   isLoading: boolean;
   login: (access?: string, refresh?: string, userData?: UserOutSchema, redirectTo?: string) => void;
   logout: () => Promise<void>;
+  logoutAll: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -51,7 +55,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = useCallback(async () => {
     try {
-      await axios.post(`${OpenAPI.BASE}/api/auth/logout`, {}, { withCredentials: true });
+      await axios.post(
+        `${OpenAPI.BASE}/api/auth/logout`,
+        {},
+        {
+          withCredentials: true,
+          headers: { "X-Requested-With": "XMLHttpRequest" },
+        }
+      );
     } catch {
       // Ignore network errors on logout
     } finally {
@@ -61,10 +72,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [router]);
 
+  const logoutAll = useCallback(async () => {
+    try {
+      await axios.post(
+        `${OpenAPI.BASE}/api/auth/logout-all`,
+        {},
+        {
+          withCredentials: true,
+          headers: { "X-Requested-With": "XMLHttpRequest" },
+        }
+      );
+    } catch {
+      // Ignore network errors on logout
+    } finally {
+      setUser(null);
+      toast.info("Logged out of all devices");
+      router.push("/auth");
+    }
+  }, [router]);
+
   useEffect(() => {
+    // 1. Synchronously register Axios interceptors BEFORE firing initAuth()
+    // This eliminates the reload race condition where an expired access token
+    // would fail before the refresh interceptor could catch it.
+    const interceptorId = setupAxiosInterceptors(() => {
+      setUser(null);
+    });
+
     const initAuth = async () => {
       try {
-        // With HttpOnly cookies, calling /api/auth/me checks if the session cookie is valid
+        // With HttpOnly cookies, calling /api/auth/me checks if the session cookie is valid.
+        // If the access token is expired, the interceptor transparently refreshes it.
         const userData = await DefaultService.userApiGetMe();
         setUser(userData);
       } catch {
@@ -73,13 +111,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setIsLoading(false);
       }
     };
-    initAuth();
-  }, []);
 
-  useEffect(() => {
-    const interceptorId = setupAxiosInterceptors(() => {
-      setUser(null);
-    });
+    initAuth();
 
     return () => {
       axios.interceptors.response.eject(interceptorId);
@@ -87,7 +120,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, logout, logoutAll }}>
       {children}
     </AuthContext.Provider>
   );

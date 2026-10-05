@@ -1,166 +1,115 @@
 "use client";
 
-import Link from "next/link";
+import { 
+  LayoutGrid, 
+  Server, 
+  Hexagon, 
+  Camera, 
+  Aperture,
+  Focus,
+  Cctv
+} from "lucide-react";
 
 export default function HighlightsSection() {
+  const partners = [
+    {
+      name: "Microsoft",
+      type: "Enterprise Software",
+      icon: LayoutGrid,
+      className: "col-span-1 md:col-span-2 row-span-2",
+      titleSize: "text-4xl sm:text-5xl",
+      iconSize: "w-12 h-12 sm:w-16 sm:h-16"
+    },
+    {
+      name: "Red Hat",
+      type: "Server & OS",
+      icon: Server,
+      className: "col-span-1 row-span-1",
+      titleSize: "text-2xl",
+      iconSize: "w-8 h-8"
+    },
+    {
+      name: "Unity",
+      type: "3D Engines",
+      icon: Hexagon,
+      className: "col-span-1 row-span-1",
+      titleSize: "text-2xl",
+      iconSize: "w-8 h-8"
+    },
+    {
+      name: "BlackVue",
+      type: "Dashcam Hardware",
+      icon: Camera,
+      className: "col-span-1 md:col-span-2 row-span-1",
+      titleSize: "text-3xl",
+      iconSize: "w-10 h-10"
+    },
+    {
+      name: "Sony",
+      type: "STARVIS™ Optics",
+      icon: Aperture,
+      className: "col-span-1 md:col-span-2 row-span-1",
+      titleSize: "text-3xl",
+      iconSize: "w-10 h-10"
+    },
+    {
+      name: "Thinkware",
+      type: "Precision Dashcams",
+      icon: Focus,
+      className: "col-span-1 row-span-1",
+      titleSize: "text-2xl",
+      iconSize: "w-8 h-8"
+    },
+    {
+      name: "FineVu",
+      type: "Vehicle Security",
+      icon: Cctv,
+      className: "col-span-1 row-span-1",
+      titleSize: "text-2xl",
+      iconSize: "w-8 h-8"
+    }
+  ];
+
   return (
-    <section className="relative -mt-32 z-20 px-4 sm:px-6 lg:px-8 pb-24">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Software Card */}
-          <div className="group card-elevated p-8 rounded-3xl relative overflow-hidden">
-
-            <div className="relative z-10 flex flex-col h-full">
-              <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-6">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">
-                Software Solutions
-              </h3>
-              <p className="text-slate-500 mb-8 leading-relaxed">
-                Secure licensing for creative, security, and development tools.
-              </p>
-
-              {/* Footer: Tags & Action */}
-              <div className="mt-auto flex flex-wrap items-center justify-between gap-4">
-                <div className="flex gap-2 flex-wrap">
-                  <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
-                    Unity
-                  </span>
-                  <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
-                    McAfee
-                  </span>
-                </div>
-
-                <Link
-                  href="/software"
-                  className="group/link relative inline-flex items-center text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors shrink-0 hover-lift after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 hover:after:w-full after:transition-all after:duration-300"
-                >
-                  Explore Software
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 ml-1 transition-transform group-hover/link:translate-x-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 8l4 4m0 0l-4 4m4-4H3"
-                    />
-                  </svg>
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {/* Hardware Card */}
-          <div className="group card-elevated p-8 rounded-3xl relative overflow-hidden">
-
-            <div className="relative z-10 flex flex-col h-full">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">
-                Fleet Hardware
-              </h3>
-              <p className="text-slate-500 mb-8 leading-relaxed">
-                Commercial dashcams, GPS tracking, and safety sensors.
-              </p>
-
-              {/* Footer: Tags & Action */}
-              <div className="mt-auto flex flex-wrap items-center justify-between gap-4">
-                <div className="flex gap-2 flex-wrap">
-                  <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
-                    Dashcams
-                  </span>
-                  <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
-                    GPS
-                  </span>
-                </div>
-
-                <Link
-                  href="/hardware"
-                  className="group/link relative inline-flex items-center text-sm font-bold text-emerald-600 hover:text-emerald-700 transition-colors shrink-0 hover-lift after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-emerald-600 hover:after:w-full after:transition-all after:duration-300"
-                >
-                  Explore Hardware
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 ml-1 transition-transform group-hover/link:translate-x-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 8l4 4m0 0l-4 4m4-4H3"
-                    />
-                  </svg>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="mt-24 flex flex-col items-center justify-center text-slate-400 opacity-60 hover:opacity-100 transition-opacity duration-300">
-          <span className="text-xs font-bold uppercase tracking-widest mb-3">
-            Scroll to discover
-          </span>
-          <div className="p-2 rounded-full bg-white border border-slate-200 shadow-sm">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-slate-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 14l-7 7m0 0l-7-7m7 7V3"
-              />
-            </svg>
-          </div>
-        </div>
+    <section className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-32 py-16">
+      
+      <div className="flex flex-col items-center text-center mb-16 max-w-3xl mx-auto">
+        <h2 className="text-4xl sm:text-5xl font-semibold text-slate-900 tracking-tight mb-4">
+          Trusted Partners.
+        </h2>
+        <p className="text-lg text-slate-500 font-medium leading-relaxed">
+          Authorized licensing and hardware sourcing from the world's leading technology publishers and manufacturers.
+        </p>
       </div>
+
+      {/* Ultra-Minimal Apple-Style Bento Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[200px] gap-4 sm:gap-6">
+        {partners.map((partner, idx) => {
+          const Icon = partner.icon;
+          return (
+            <div 
+              key={idx} 
+              className={`group flex flex-col justify-between p-8 rounded-[2rem] bg-slate-50 hover:bg-white border border-slate-200/60 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-500 ease-out cursor-default overflow-hidden relative ${partner.className}`}
+            >
+              {/* Top Row: Icon & Type */}
+              <div className="flex justify-between items-start relative z-10">
+                <Icon className={`${partner.iconSize} text-slate-400 group-hover:text-slate-900 transition-colors duration-500`} strokeWidth={1.5} />
+                <span className="text-xs font-semibold tracking-wide text-slate-400 group-hover:text-slate-500 transition-colors duration-500 text-right">
+                  {partner.type}
+                </span>
+              </div>
+
+              {/* Bottom Row: Brand Name */}
+              <div className="relative z-10">
+                <h3 className={`${partner.titleSize} font-semibold tracking-tight text-slate-800 group-hover:text-black transition-colors duration-500`}>
+                  {partner.name}
+                </h3>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      
     </section>
   );
 }

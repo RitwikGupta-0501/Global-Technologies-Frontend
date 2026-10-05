@@ -650,7 +650,7 @@ export default function CartSidebar({
                           <Plus size={12} />
                         </button>
                       </div>
-                      <span className="font-bold text-slate-900">
+                      <span className="font-bold text-slate-900 tabular-nums">
                         {formatPrice(Number(item.price) * item.qty)}
                       </span>
                     </div>
@@ -666,7 +666,7 @@ export default function CartSidebar({
           <div className="p-5 border-t border-slate-100 bg-white">
             <div className="flex justify-between items-end mb-4">
               <span className="text-slate-500 font-medium">Subtotal</span>
-              <span className="text-2xl font-bold text-slate-900">
+              <span className="text-2xl font-extrabold text-slate-900 tabular-nums tracking-tight">
                 {formatPrice(cartTotal)}
               </span>
             </div>

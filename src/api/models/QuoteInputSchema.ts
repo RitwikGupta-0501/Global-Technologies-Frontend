@@ -8,5 +8,6 @@ export type QuoteInputSchema = {
     phone?: string;
     quantity?: number;
     message?: string;
+    website?: string;
 };
 

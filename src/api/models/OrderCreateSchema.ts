@@ -15,5 +15,5 @@ export type OrderCreateSchema = {
     shipping_address: AddressSchema;
     items: Array<OrderItemSchema>;
     save_info?: boolean;
+    idempotency_key?: (string | null);
 };
-

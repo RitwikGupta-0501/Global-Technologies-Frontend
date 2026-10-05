@@ -1,5 +1,6 @@
 import Navbar from "../../components/Navbar";
 import ProductGrid from "../../components/home/ProductGrid";
+import Footer from "../../components/Footer";
 
 async function getProducts() {
   try {
@@ -22,31 +23,26 @@ export default async function SoftwarePage() {
   const products = await getProducts();
 
   return (
-    <main className="min-h-screen bg-slate-50 font-sans">
+    <main className="min-h-screen bg-[#f8fafc] text-slate-700 font-sans">
       <Navbar />
 
-      <div className="pt-32 pb-12 bg-white border-b border-slate-200 mb-12">
+      <div className="pt-36 pb-12 bg-white border-b border-slate-200/80 mb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Software Solutions</h1>
-          <p className="mt-4 max-w-2xl text-lg text-slate-500">
-            Secure licensing for creative, security, and development tools tailored to enterprise scale.
+          <span className="text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+            Digital Distribution
+          </span>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
+            Software Solutions &amp; Licensing
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm sm:text-base text-slate-500">
+            Genuine commercial licenses for security, developer platforms, 3D engines, and enterprise infrastructure with GST tax credit.
           </p>
         </div>
       </div>
 
       <ProductGrid products={products} initialCategory="Software" hideCategoryFilter={true} />
 
-      {/* Footer */}
-      <footer className="bg-slate-900 text-slate-400 py-16 border-t border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <span className="text-white font-bold text-2xl">GLOBAL TECHNOLOGIES</span>
-            <p className="mt-4 text-sm text-slate-500">
-              &copy; 2025 Global Technologies. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }

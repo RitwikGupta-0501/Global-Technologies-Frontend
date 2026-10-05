@@ -5,8 +5,11 @@
 import type { OrderItemOutSchema } from './OrderItemOutSchema';
 export type OrderOutSchema = {
     id: number;
+    invoice_number?: (string | null);
     status: string;
-    total_amount: number;
+    subtotal?: (number | string);
+    tax_amount?: (number | string);
+    total_amount: number | string;
     first_name: string;
     last_name: string;
     email: string;
@@ -23,4 +26,3 @@ export type OrderOutSchema = {
     created_at: string;
     items: Array<OrderItemOutSchema>;
 };
-

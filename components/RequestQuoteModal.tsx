@@ -26,6 +26,7 @@ export default function RequestQuoteModal() {
     phone: "",
     quantity: 1,
     message: "",
+    website: "",
   });
 
   // Check if we are already on the product page
@@ -62,6 +63,7 @@ export default function RequestQuoteModal() {
         phone: formData.phone.trim() || undefined,
         quantity: Number(formData.quantity),
         message: formData.message.trim(),
+        website: formData.website || undefined,
       });
 
       setStep("success");
@@ -101,6 +103,18 @@ export default function RequestQuoteModal() {
         >
           <X className="w-5 h-5" />
         </button>
+
+        {/* Honeypot field for automated spam bots */}
+        <input
+          type="text"
+          name="website"
+          value={formData.website}
+          onChange={(e) => setFormData((prev) => ({ ...prev, website: e.target.value }))}
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          style={{ display: "none", position: "absolute", left: "-9999px" }}
+        />
 
         {step === "success" ? (
           // --- SUCCESS STATE ---

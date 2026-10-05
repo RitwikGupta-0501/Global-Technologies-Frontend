@@ -31,6 +31,9 @@ interface RazorpayOptions {
   theme: {
     color: string;
   };
+  modal?: {
+    ondismiss?: () => void;
+  };
 }
 
 interface RazorpayInstance {
@@ -87,8 +90,12 @@ export default function GlobalCart() {
         return;
       }
 
+      // 1. Generate Idempotency Key to prevent duplicate submissions
+      const idempotencyKey = typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `idemp_${Date.now()}`;
+
       // 2. Call Backend: INITIATE ORDER
       const orderData = await DefaultService.orderApiInitiateOrder({
+        idempotency_key: idempotencyKey,
         first_name: formData.firstName,
         last_name: formData.lastName,
         email: formData.email,
@@ -116,7 +123,7 @@ export default function GlobalCart() {
       // 3. Open Razorpay Popup
       const options: RazorpayOptions = {
         key: orderData.key_id, // Public Key from backend response
-        amount: (orderData as { amount_paise?: number; amount: number }).amount_paise ?? Math.round(orderData.amount * 100), // Precise integer amount in paise
+        amount: (orderData as { amount_paise?: number; amount: number }).amount_paise ?? Math.round(Number(orderData.amount) * 100), // Precise integer amount in paise
         currency: orderData.currency,
         name: "Global Technologies",
         description: `Order #${orderData.order_id}`,
@@ -146,6 +153,12 @@ export default function GlobalCart() {
         },
         theme: {
           color: "#0f172a", // Slate-900 (Matches your brand)
+        },
+        modal: {
+          ondismiss: () => {
+            setLoading(false);
+            toast.info("Payment window closed. Your order is reserved and you may retry.");
+          },
         },
       };
 

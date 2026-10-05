@@ -29,10 +29,10 @@ export default function ProductDetailsView({
   const [selectedImage, setSelectedImage] = useState(0);
   const [activeTab, setActiveTab] = useState<"features" | "specs">("features");
 
-  // Zoom state
+  // Zoom state (optimized with Ref to prevent 60fps React re-renders)
   const [showZoom, setShowZoom] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const imageContainerRef = useRef<HTMLDivElement>(null);
+  const zoomLensRef = useRef<HTMLDivElement>(null);
 
   // Cart Context
   const { cart, addToCart, removeFromCart, formatPrice } = useCart();
@@ -108,14 +108,16 @@ export default function ProductDetailsView({
     openQuoteModal(product);
   };
 
-  // Zoom Handlers
+  // Zoom Handlers (Direct DOM updates for silky-smooth 60fps without React re-renders)
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!imageContainerRef.current) return;
+    if (!imageContainerRef.current || !zoomLensRef.current) return;
     const { left, top, width, height } =
       imageContainerRef.current.getBoundingClientRect();
-    const x = ((e.clientX - left) / width) * 100;
-    const y = ((e.clientY - top) / height) * 100;
-    setMousePosition({ x, y });
+    const x = Math.max(0, Math.min(100, ((e.clientX - left) / width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - top) / height) * 100));
+    zoomLensRef.current.style.left = `${x}%`;
+    zoomLensRef.current.style.top = `${y}%`;
+    zoomLensRef.current.style.backgroundPosition = `${x}% ${y}%`;
   };
 
   // Safe Image handling
@@ -127,16 +129,16 @@ export default function ProductDetailsView({
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-4 lg:mt-8">
         {/* Breadcrumbs */}
-        <nav className="flex items-center text-sm text-slate-500 mb-8 pt-2">
+        <nav className="flex items-center text-xs font-medium text-slate-500 mb-8 pt-2">
           <Link
             href="/"
             className="hover:text-slate-900 transition-colors flex items-center"
           >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Back to Products
+            <ArrowLeft className="w-3.5 h-3.5 mr-1" />
+            Back to Catalog
           </Link>
-          <ChevronRight className="w-4 h-4 mx-2 text-slate-300" />
-          <span className="text-slate-900 font-medium">{product.name}</span>
+          <ChevronRight className="w-3.5 h-3.5 mx-2 text-slate-300" />
+          <span className="text-slate-900 font-semibold">{product.name}</span>
         </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
@@ -147,7 +149,7 @@ export default function ProductDetailsView({
                 {/* Main Image Container */}
                 <div
                   ref={imageContainerRef}
-                  className="aspect-square bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden relative group cursor-crosshair"
+                  className="aspect-square bg-white rounded-3xl border border-slate-200/80 shadow-card overflow-hidden relative group cursor-crosshair"
                   onMouseEnter={() => setShowZoom(true)}
                   onMouseLeave={() => setShowZoom(false)}
                   onMouseMove={handleMouseMove}
@@ -163,15 +165,16 @@ export default function ProductDetailsView({
 
                   {showZoom && (
                     <div
-                      className="absolute pointer-events-none border-2 border-slate-400/50 bg-white shadow-2xl rounded-xl"
+                      ref={zoomLensRef}
+                      className="absolute pointer-events-none border-2 border-slate-400/50 bg-white shadow-2xl rounded-xl z-20"
                       style={{
                         width: "150px",
                         height: "150px",
-                        left: `${mousePosition.x}%`,
-                        top: `${mousePosition.y}%`,
+                        left: "50%",
+                        top: "50%",
                         transform: "translate(-50%, -50%)",
                         backgroundImage: `url(${getImageUrl(mainImage)})`,
-                        backgroundPosition: `${mousePosition.x}% ${mousePosition.y}%`,
+                        backgroundPosition: "50% 50%",
                         backgroundSize: "500%",
                         backgroundRepeat: "no-repeat",
                       }}
@@ -237,26 +240,29 @@ export default function ProductDetailsView({
               </h1>
               <div className="flex items-center gap-4 text-sm">
                 {/* Reviews & Ratings moved to Future Scope */}
-                <span className="text-emerald-600 font-medium flex items-center">
-                  <Check className="w-4 h-4 mr-1" />
-                  {stockCount > 0 ? "In Stock" : "Out of Stock"}
+                <span className="text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full text-xs font-semibold flex items-center border border-emerald-100">
+                  <Check className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+                  Available for Immediate Dispatch
+                </span>
+                <span className="text-xs text-slate-500 font-medium">
+                  • GST Invoicing Available
                 </span>
               </div>
             </div>
 
             {/* Price & Cart Section */}
-            <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-8">
+            <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm mb-8">
               <div className="flex items-end justify-between mb-6">
                 <div>
-                  <p className="text-sm text-slate-500 font-medium mb-1">
+                  <p className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-1">
                     {priceLabel}
                   </p>
                   {isQuote ? (
-                    <div className="text-3xl font-bold text-blue-600">
+                    <div className="text-3xl font-extrabold text-blue-600">
                       Quote Required
                     </div>
                   ) : (
-                    <div className="text-4xl font-bold text-slate-900">
+                    <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 tabular-nums tracking-tight">
                       {formatPrice(product.price)}
                     </div>
                   )}

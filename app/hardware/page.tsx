@@ -1,5 +1,6 @@
 import Navbar from "../../components/Navbar";
 import ProductGrid from "../../components/home/ProductGrid";
+import Footer from "../../components/Footer";
 
 async function getProducts() {
   try {
@@ -22,31 +23,26 @@ export default async function HardwarePage() {
   const products = await getProducts();
 
   return (
-    <main className="min-h-screen bg-slate-50 font-sans">
+    <main className="min-h-screen bg-[#f8fafc] text-slate-700 font-sans">
       <Navbar />
 
-      <div className="pt-32 pb-12 bg-white border-b border-slate-200 mb-12">
+      <div className="pt-36 pb-12 bg-white border-b border-slate-200/80 mb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Fleet Hardware</h1>
-          <p className="mt-4 max-w-2xl text-lg text-slate-500">
-            Commercial dashcams, GPS tracking, and safety sensors for comprehensive fleet management.
+          <span className="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200/60">
+            Specialized Hardware Import
+          </span>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
+            Imported Korean Dashcams
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm sm:text-base text-slate-500">
+            High-precision vehicle recording systems, optical sensors, and commercial dashcam hardware. Available for individual drivers and corporate fleet bulk supply.
           </p>
         </div>
       </div>
 
       <ProductGrid products={products} initialCategory="Hardware" hideCategoryFilter={true} />
 
-      {/* Footer */}
-      <footer className="bg-slate-900 text-slate-400 py-16 border-t border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <span className="text-white font-bold text-2xl">GLOBAL TECHNOLOGIES</span>
-            <p className="mt-4 text-sm text-slate-500">
-              &copy; 2025 Global Technologies. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }
