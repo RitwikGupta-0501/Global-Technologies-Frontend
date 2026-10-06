@@ -76,7 +76,6 @@ export default function GlobalCart() {
 
     try {
       // 1. Prepare Payload
-      // Filter only fixed items (just in case)
       const itemsPayload = cart
         .filter((item) => item.price_type === "fixed")
         .map((item) => ({
@@ -90,8 +89,11 @@ export default function GlobalCart() {
         return;
       }
 
-      // 1. Generate Idempotency Key to prevent duplicate submissions
-      const idempotencyKey = typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `idemp_${Date.now()}`;
+      // 1. Generate Idempotency Key
+      const idempotencyKey =
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `idemp_${Date.now()}`;
 
       // 2. Call Backend: INITIATE ORDER
       const orderData = await DefaultService.orderApiInitiateOrder({
@@ -122,14 +124,15 @@ export default function GlobalCart() {
 
       // 3. Open Razorpay Popup
       const options: RazorpayOptions = {
-        key: orderData.key_id, // Public Key from backend response
-        amount: (orderData as { amount_paise?: number; amount: number }).amount_paise ?? Math.round(Number(orderData.amount) * 100), // Precise integer amount in paise
+        key: orderData.key_id,
+        amount:
+          (orderData as { amount_paise?: number; amount: number }).amount_paise ??
+          Math.round(Number(orderData.amount) * 100),
         currency: orderData.currency,
         name: "Global Technologies",
         description: `Order #${orderData.order_id}`,
-        order_id: orderData.razorpay_order_id, // The critical Razorpay Order ID
+        order_id: orderData.razorpay_order_id,
         handler: async function (response: RazorpayResponse) {
-          // 4. Payment Success -> Call Backend: VERIFY
           try {
             await DefaultService.orderApiVerifyPayment({
               razorpay_order_id: response.razorpay_order_id,
@@ -137,10 +140,9 @@ export default function GlobalCart() {
               razorpay_signature: response.razorpay_signature,
             });
 
-            // 5. Success State
             toast.success("Payment Successful!");
-            clearCart(); // Clears cart and sets step to 'cart'
-            setCheckoutStep("success"); // Override step to show success message
+            clearCart();
+            setCheckoutStep("success");
           } catch (verifyError) {
             console.error("Verification Failed", verifyError);
             toast.error("Payment verification failed. Please contact support.");
@@ -152,7 +154,7 @@ export default function GlobalCart() {
           contact: formData.phone,
         },
         theme: {
-          color: "#0f172a", // Slate-900 (Matches your brand)
+          color: "#0f172a",
         },
         modal: {
           ondismiss: () => {
@@ -167,15 +169,13 @@ export default function GlobalCart() {
         setLoading(false);
         return;
       }
-      
+
       const rzp1 = new window.Razorpay(options);
       rzp1.open();
     } catch (error) {
       console.error(error);
       if (error instanceof ApiError) {
-        toast.error(
-          `Checkout failed: ${error.body?.message || error.statusText}`,
-        );
+        toast.error(`Checkout failed: ${error.body?.message || error.statusText}`);
       } else {
         toast.error("Something went wrong. Please try again.");
       }
@@ -185,23 +185,58 @@ export default function GlobalCart() {
   };
 
   return (
-    <CartSidebar
-      cart={cart}
-      isCartOpen={isCartOpen}
-      checkoutStep={checkoutStep}
-      cartTotal={cartTotal}
-      loading={loading} // <--- Pass loading state
-      formatPrice={formatPrice}
-      onClose={() => setIsCartOpen(false)}
-      onReset={() => {
-        resetCart();
-        setIsCartOpen(false);
-      }}
-      onProceed={handleProceed}
-      onUpdateQty={updateQty}
-      onRemove={removeFromCart}
-      onSetStep={setCheckoutStep}
-      onSubmitForm={handleCheckoutSubmit} // <--- Pass the new handler
-    />
+    <>
+      <CartSidebar
+        cart={cart}
+        isCartOpen={isCartOpen}
+        checkoutStep={checkoutStep}
+        cartTotal={cartTotal}
+        loading={loading}
+        formatPrice={formatPrice}
+        onClose={() => setIsCartOpen(false)}
+        onReset={() => {
+          resetCart();
+          setIsCartOpen(false);
+        }}
+        onProceed={handleProceed}
+        onUpdateQty={updateQty}
+        onRemove={removeFromCart}
+        onSetStep={setCheckoutStep}
+        onSubmitForm={handleCheckoutSubmit}
+      />
+
+      {/* FLOATING CART REMINDER PILL (Matching landing_stitch.html) */}
+      {cart.length > 0 && !isCartOpen && (
+        <aside className="fixed bottom-6 right-6 z-40 transition-transform duration-300 transform translate-y-0">
+          <button
+            onClick={() => setIsCartOpen(true)}
+            type="button"
+            className="flex items-center gap-4 px-5 py-3.5 rounded-full bg-on-surface/95 text-on-primary backdrop-blur-xl shadow-2xl hover:scale-105 active:scale-95 transition-all border border-white/10 cursor-pointer"
+          >
+            <div className="relative flex items-center justify-center">
+              <span className="material-symbols-outlined text-[22px] text-on-primary">
+                shopping_bag
+              </span>
+              <span className="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-primary text-on-primary text-[10px] font-bold flex items-center justify-center">
+                {cart.length}
+              </span>
+            </div>
+            <div className="flex flex-col text-left">
+              <span className="text-[11px] text-secondary-fixed leading-tight">
+                {cart.length} {cart.length === 1 ? "item" : "items"} in cart
+              </span>
+              <span className="text-sm font-bold text-on-primary">
+                ₹{cartTotal.toLocaleString("en-IN")}
+              </span>
+            </div>
+            <div className="w-7 h-7 rounded-full bg-surface-container-lowest/20 flex items-center justify-center ml-1">
+              <span className="material-symbols-outlined text-[16px] text-on-primary">
+                arrow_forward
+              </span>
+            </div>
+          </button>
+        </aside>
+      )}
+    </>
   );
 }

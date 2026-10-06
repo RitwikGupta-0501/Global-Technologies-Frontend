@@ -1,23 +1,26 @@
 import Navbar from "../components/Navbar";
-import HeroSection from "../components/home/HeroSection";
-import TrustPillars from "../components/home/TrustPillars";
-import HighlightsSection from "../components/home/HighlightsSection";
-import ProductGrid from "../components/home/ProductGrid";
+import Hero from "../components/home/Hero";
+import OEMAlliances from "../components/home/OEMAlliances";
+import Categories from "../components/home/Categories";
+import BestSellers from "../components/home/BestSellers";
+import EnterpriseBanner from "../components/home/EnterpriseBanner";
 import Footer from "../components/Footer";
 
 async function getProducts() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"}/api/products/`, {
-      // Cache for 5 minutes, revalidate on demand
-      next: { revalidate: 300 },
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"}/api/products/`,
+      {
+        next: { revalidate: 300 },
+      }
+    );
 
     if (!res.ok) {
       return [];
     }
 
     const data = await res.json();
-    return Array.isArray(data) ? data : (data.items || data.results || []);
+    return Array.isArray(data) ? data : data.items || data.results || [];
   } catch (err) {
     console.warn("Failed to fetch products at render/build time:", err);
     return [];
@@ -28,18 +31,18 @@ export default async function Home() {
   const products = await getProducts();
 
   return (
-    <main className="min-h-screen bg-[#f8fafc] text-slate-700 font-sans relative selection:bg-blue-600 selection:text-white">
+    <>
       <Navbar />
 
-      <HeroSection />
-      <TrustPillars />
-      <HighlightsSection />
-
-      <div id="catalog">
-        <ProductGrid products={products} />
-      </div>
+      <main className="w-full pt-44 bg-background">
+        <Hero />
+        <OEMAlliances />
+        <Categories />
+        <BestSellers products={products} />
+        <EnterpriseBanner />
+      </main>
 
       <Footer />
-    </main>
+    </>
   );
 }
