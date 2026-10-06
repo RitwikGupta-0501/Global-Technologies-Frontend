@@ -78,7 +78,7 @@ export default function HighlightsSection() {
           Trusted Partners.
         </h2>
         <p className="text-lg text-slate-500 font-medium leading-relaxed">
-          Authorized licensing and hardware sourcing from the world's leading technology publishers and manufacturers.
+          Authorized licensing and hardware sourcing from the world&apos;s leading technology publishers and manufacturers.
         </p>
       </div>
 

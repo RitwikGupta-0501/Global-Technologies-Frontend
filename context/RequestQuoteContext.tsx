@@ -6,7 +6,7 @@ import { ProductSchema } from "@/api/models/ProductSchema";
 interface RequestQuoteContextType {
   isOpen: boolean;
   selectedProduct: ProductSchema | null;
-  openQuoteModal: (product: ProductSchema) => void;
+  openQuoteModal: (product?: ProductSchema) => void;
   closeQuoteModal: () => void;
 }
 
@@ -14,16 +14,31 @@ const RequestQuoteContext = createContext<RequestQuoteContextType | undefined>(
   undefined,
 );
 
+const genericRFQProduct: ProductSchema = {
+  id: 0,
+  name: "Corporate Volume RFQ",
+  category: "Software",
+  type: "Enterprise Quote",
+  price_type: "quote",
+  slug: "general-rfq",
+  description: "Enterprise software licensing and fleet hardware volume procurement request",
+  price: "0",
+  rating: 5,
+  reviews: 0,
+  features: ["Enterprise Volume", "Dedicated Account Manager", "GST Invoicing"],
+  images: ["/logo.png"],
+};
+
 export function RequestQuoteProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductSchema | null>(
     null,
   );
 
-  const openQuoteModal = (product: ProductSchema) => {
-    setSelectedProduct(product);
+  const openQuoteModal = (product?: ProductSchema) => {
+    setSelectedProduct(product || genericRFQProduct);
     setIsOpen(true);
-    // Optional: Prevent background scrolling
+    // Prevent background scrolling
     document.body.style.overflow = "hidden";
   };
 
