@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { SearchX, RotateCcw, Filter, X } from "lucide-react";
+import { SearchX, RotateCcw, Filter } from "lucide-react";
 import ProductCard from "../ProductCard";
 import { ProductSchema } from "@/api/models/ProductSchema";
 
@@ -298,7 +298,7 @@ export default function ProductGrid({ products, initialCategory = "All Products"
                 </div>
                 <h3 className="text-base font-bold text-slate-900 mb-1">No products match your criteria</h3>
                 <p className="text-xs text-slate-500 max-w-sm mb-4">
-                  We couldn't find any inventory matching your exact filters. Adjust your criteria or clear filters to view the full catalog.
+                  We couldn&apos;t find any inventory matching your exact filters. Adjust your criteria or clear filters to view the full catalog.
                 </p>
                 <button
                   onClick={() => {

@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+const isDev = process.env.NODE_ENV !== "production";
+
 const nextConfig: NextConfig = {
   images: {
     dangerouslyAllowLocalIP: true,
@@ -22,6 +24,23 @@ const nextConfig: NextConfig = {
         port: "", // Leave empty for standard HTTPS (443)
         pathname: "/media/**", // Only allow media path for security
       },
+      // Debug / Development mode only patterns (Forbidden in Production)
+      ...(isDev
+        ? [
+            {
+              protocol: "https" as const,
+              hostname: "lh3.googleusercontent.com",
+              port: "",
+              pathname: "/**",
+            },
+            {
+              protocol: "https" as const,
+              hostname: "picsum.photos",
+              port: "",
+              pathname: "/**",
+            },
+          ]
+        : []),
     ],
   },
 };

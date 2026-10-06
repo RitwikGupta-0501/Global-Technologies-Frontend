@@ -52,7 +52,6 @@ export default function ProductDetailsView({
   // --- DATA MAPPING (Bridge API -> UI) ---
   const isQuote = product.price_type === "quote";
   const priceLabel = isQuote ? "Custom Configuration" : "Per License";
-  const stockCount = 10;
 
   // --- LOGIC ---
 
