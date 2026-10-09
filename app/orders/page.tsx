@@ -104,10 +104,10 @@ export default function OrdersPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 font-sans pb-24">
+    <main className="min-h-screen bg-background font-sans pb-24">
       <Navbar />
 
-      <div className="pt-28 sm:pt-32 pb-8 bg-white border-b border-slate-200">
+      <div className="pt-36 sm:pt-44 pb-8 bg-surface-container border-b border-outline-variant/30">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>

@@ -1,6 +1,10 @@
 import Navbar from "../../components/Navbar";
-import ProductGrid from "../../components/home/ProductGrid";
 import Footer from "../../components/Footer";
+import ProductGrid from "../../components/home/ProductGrid";
+import SoftwareHero from "../../components/software/SoftwareHero";
+import BestSellingSoftware from "../../components/software/BestSellingSoftware";
+import SoftwareCategoryTiles from "../../components/software/SoftwareCategoryTiles";
+import SoftwareCompanyTiles from "../../components/software/SoftwareCompanyTiles";
 
 async function getProducts() {
   try {
@@ -21,28 +25,33 @@ async function getProducts() {
 
 export default async function SoftwarePage() {
   const products = await getProducts();
+  
+  // Best sellers can be assumed to be top 4 software products
+  const softwareProducts = products.filter((p: any) => p.category === "Software" || !p.category);
+  const bestSellers = softwareProducts.slice(0, 4); 
 
   return (
-    <main className="min-h-screen bg-[#f8fafc] text-slate-700 font-sans">
+    <>
       <Navbar />
-
-      <div className="pt-36 pb-12 bg-white border-b border-slate-200/80 mb-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <span className="text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
-            Digital Distribution
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
-            Software Solutions &amp; Licensing
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm sm:text-base text-slate-500">
-            Genuine commercial licenses for security, developer platforms, 3D engines, and enterprise infrastructure with GST tax credit.
-          </p>
+      <main className="w-full pt-32 pb-20 bg-background">
+        <SoftwareHero />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 lg:space-y-24 mt-12 mb-20">
+          <BestSellingSoftware products={bestSellers} />
+          <SoftwareCategoryTiles />
+          <SoftwareCompanyTiles />
         </div>
-      </div>
 
-      <ProductGrid products={products} initialCategory="Software" hideCategoryFilter={true} />
-
+        {/* Traditional Product List with Filters */}
+        <div className="bg-surface-container-lowest border-t border-outline-variant/20 pt-16 pb-12" id="all-software">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <h2 className="text-3xl font-extrabold text-on-surface tracking-tight">All Software Licenses</h2>
+            <p className="text-on-surface-variant mt-2">Browse, filter, and sort our complete catalog.</p>
+          </div>
+          <ProductGrid products={softwareProducts} initialCategory="Software" hideCategoryFilter={true} />
+        </div>
+      </main>
       <Footer />
-    </main>
+    </>
   );
 }

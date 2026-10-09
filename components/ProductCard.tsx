@@ -1,10 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import Image from "next/image";
+import React from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Plus, Phone, Heart } from "lucide-react";
 import { ProductSchema } from "@/api/models/ProductSchema";
 import { getImageUrl } from "@/lib/utils";
 import { useCart } from "~/context/CartContext";
@@ -15,207 +13,124 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Cart Context Hooks
-  const { cart, addToCart, incrementQty, decrementQty, formatPrice } =
-    useCart();
+  const { addToCart } = useCart();
   const { openQuoteModal } = useRequestQuote();
 
+  const isHardware = product.category?.toLowerCase() === "hardware";
   const isQuote = product.price_type === "quote";
-  const cartItem = cart.find((item) => item.id === product.id);
-  const currentQty = cartItem ? cartItem.qty : 0;
-  const productColor = product.category === "Software" ? "blue" : "amber";
 
-  const handleAddToCart = () => {
+  const categoryBadge = (product.category || "Software").toUpperCase();
+  const badgeClass = isHardware
+    ? "bg-tertiary-fixed text-on-tertiary-fixed"
+    : "bg-secondary-container text-on-secondary-container";
+    
+  const statusBadge = isQuote ? "Request Quote" : isHardware ? "In Stock" : "Instant Key";
+  const statusIcon = isQuote ? "support_agent" : isHardware ? "local_shipping" : "bolt";
+  const statusClass = isHardware
+    ? "text-tertiary bg-tertiary-fixed/40"
+    : "text-primary bg-surface-container";
+
+  const subtitle = product.type || "Commercial License";
+  const priceFormatted = isQuote ? "Enterprise" : `₹${Number(product.price || 0).toLocaleString("en-IN")}`;
+  const priceUnit = isQuote ? "" : isHardware ? "incl. GST" : "/ year";
+  const gstNote = isQuote
+    ? "Contact Sales for Volume Pricing"
+    : isHardware
+    ? "Free Express Air Courier Pan-India"
+    : "+18% GST Claimable";
+  const gstNoteClass = isHardware ? "text-secondary" : "text-tertiary";
+
+  const imageUrl = product.images?.[0] ? getImageUrl(product.images[0]) : "";
+  const secondaryCtaText = isQuote ? "Request Quote" : isHardware ? "Details" : "Buy Now";
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     addToCart(product);
     toast.success(`${product.name} added to cart!`);
   };
 
-  const handleRequestQuote = () => {
-    openQuoteModal(product);
-  };
-
-  const handleMouseEnter = () => {
-    if (product.images && product.images.length > 1) {
-      intervalRef.current = setInterval(() => {
-        setCurrentImageIndex((prev) => (prev + 1) % product.images.length);
-      }, 2000);
+  const handleSecondaryAction = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isQuote) {
+      openQuoteModal(product);
+    } else {
+      window.location.href = `/product/${product.id}-${product.slug}`;
     }
   };
-
-  const handleMouseLeave = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-    setCurrentImageIndex(0);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, []);
 
   return (
-    <div
-      className="group bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col h-full"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+    <Link
+      href={`/product/${product.id}-${product.slug}`}
+      className="group flex flex-col justify-between rounded-2xl bg-surface-container-lowest border border-outline-variant/30 p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all focus-visible:outline-2 focus-visible:outline-primary h-full"
     >
-      {/* Header: Badge & Favorite */}
-      <div className="flex justify-between items-start mb-4">
-        <span
-          className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-            productColor === "blue"
-              ? "bg-blue-50 text-blue-700 border border-blue-100"
-              : "bg-amber-50 text-amber-800 border border-amber-200/60"
-          }`}
-        >
-          {product.category === "Hardware" ? "Korean Dashcam" : product.category}
-        </span>
-        <button
-          className="min-w-[44px] min-h-[44px] -mr-2 -mt-2 rounded-full flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors z-10 relative cursor-pointer focus-visible:outline-2 focus-visible:outline-blue-600"
-          aria-label={`Save ${product.name} to favorites`}
-        >
-          <Heart className="h-4 w-4" />
-        </button>
-      </div>
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <span
+            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${badgeClass}`}
+          >
+            {categoryBadge}
+          </span>
+          <span
+            className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-md ${statusClass}`}
+          >
+            <span className="material-symbols-outlined text-[13px]">{statusIcon}</span>
+            {statusBadge}
+          </span>
+        </div>
 
-      {/* Image Area */}
-      <Link
-        href={`/product/${product.id}-${product.slug}`}
-        className="block w-full focus-visible:outline-2 focus-visible:outline-blue-600 rounded-xl"
-      >
-        <div className="mb-4 relative w-full h-48 bg-slate-50 rounded-xl overflow-hidden border border-slate-100 group-hover:border-slate-200 transition-all">
-          {product.images?.length ? (
-            <>
-              {product.images.map((img, idx) => (
-                <Image
-                  key={idx}
-                  src={getImageUrl(img)}
-                  alt={`${product.name} View ${idx + 1}`}
-                  fill
-                  aria-hidden={idx !== currentImageIndex}
-                  className={`object-contain p-4 transition-opacity duration-500 motion-reduce:transition-none ease-in-out ${
-                    idx === currentImageIndex ? "opacity-100" : "opacity-0"
-                  }`}
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                />
-              ))}
-              {product.images.length > 1 && (
-                <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {product.images.map((_, idx) => (
-                    <div
-                      key={idx}
-                      className={`h-1 rounded-full transition-all duration-300 ${
-                        idx === currentImageIndex
-                          ? "w-4 bg-slate-800"
-                          : "w-1 bg-slate-300"
-                      }`}
-                    />
-                  ))}
-                </div>
-              )}
-            </>
-          ) : (
-            <Image
-              src="/placeholder.svg"
+        <div className="relative w-full h-44 rounded-xl bg-surface-container-low overflow-hidden mb-4 flex items-center justify-center p-3">
+          {imageUrl && (
+            <img
+              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
               alt={product.name}
-              fill
-              className="object-contain p-4"
-              sizes="(max-width: 768px) 100vw, 33vw"
+              src={imageUrl}
             />
           )}
         </div>
-      </Link>
 
-      {/* Product Details */}
-      <Link 
-        href={`/product/${product.id}-${product.slug}`} 
-        className="block focus-visible:outline-2 focus-visible:outline-blue-600 rounded"
-      >
-        <h3 className="font-bold text-base text-slate-900 mb-1 hover:text-blue-600 transition-colors line-clamp-1">
-          {product.name}
-        </h3>
-      </Link>
-      <p className="text-xs text-slate-500 mb-4 line-clamp-2 leading-relaxed">
-        {product.description}
-      </p>
+        <p className="text-xs text-on-surface-variant mb-1 font-medium">{subtitle}</p>
+        <h3 className="text-base font-bold text-on-surface leading-snug mb-2 group-hover:text-primary transition-colors">{product.name}</h3>
+        <p className="text-xs text-on-surface-variant line-clamp-2 mb-4">
+          {product.description}
+        </p>
+      </div>
 
-      {/* Footer: Price & Action with Standardized Alignment */}
-      <div className="mt-auto pt-4 border-t border-slate-100 flex flex-col gap-2">
-        {/* ROW 1: THE LABEL */}
-        <div className="flex items-center justify-between">
-          <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
-            {product.type || "Commercial License"}
-          </p>
-          {isQuote && (
-            <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
-              Volume Sourcing
+      <div className="pt-4 border-t border-outline-variant/30 mt-auto">
+        <div className="mb-3">
+          <div className="flex items-baseline gap-1">
+            <span className="text-xl font-extrabold text-on-surface">
+              {priceFormatted}
             </span>
-          )}
+            <span className="text-xs text-on-surface-variant font-medium">
+              {priceUnit}
+            </span>
+          </div>
+          <p className={`text-xs font-semibold ${gstNoteClass}`}>{gstNote}</p>
         </div>
 
-        {/* ROW 2: PRICE & BUTTONS */}
-        <div className="flex items-center justify-between min-h-[44px]">
-          <div>
-            {!isQuote ? (
-              <p className="font-extrabold text-lg text-slate-900 tabular-nums tracking-tight">
-                {formatPrice(product.price)}
-              </p>
-            ) : (
-              <p className="text-xs font-bold text-slate-600">
-                Custom Volume RFQ
-              </p>
-            )}
-          </div>
-
-          {/* CTA area with 44px min touch targets */}
-          {isQuote ? (
-            <button
-              className="min-h-[44px] px-4 py-2 rounded-full bg-slate-900 text-white text-xs font-bold hover:bg-blue-600 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-blue-600"
-              aria-label={`Request volume quote for ${product.name}`}
-              onClick={handleRequestQuote}
-            >
-              <Phone className="w-3.5 h-3.5" />
-              <span>Request RFQ</span>
-            </button>
-          ) : currentQty === 0 ? (
+        <div className="grid grid-cols-2 gap-2">
+          {!isQuote && (
             <button
               onClick={handleAddToCart}
-              className="min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center bg-slate-900 text-white hover:bg-blue-600 transition-all cursor-pointer shadow-xs active:scale-95 focus-visible:outline-2 focus-visible:outline-blue-600"
-              aria-label={`Add ${product.name} to cart`}
+              type="button"
+              className="w-full flex items-center justify-center gap-1 py-2.5 rounded-xl bg-surface-container-high text-on-surface text-xs font-bold hover:bg-surface-container-highest active:scale-[0.98] transition-all cursor-pointer"
             >
-              <Plus aria-hidden="true" className="w-4 h-4" />
+              <span className="material-symbols-outlined text-[16px]">add_shopping_cart</span>
+              <span>Cart</span>
             </button>
-          ) : (
-            <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-full p-1">
-              <button
-                onClick={() => decrementQty(product.id)}
-                className="w-8 h-8 rounded-full border border-slate-300 flex items-center justify-center hover:bg-white text-slate-700 text-xs font-bold transition-colors cursor-pointer"
-                aria-label={`Decrease quantity for ${product.name}`}
-              >
-                −
-              </button>
-              <span className="text-xs font-bold text-slate-800 w-6 text-center tabular-nums">
-                {currentQty}
-              </span>
-              <button
-                onClick={() => incrementQty(product.id)}
-                className="w-8 h-8 rounded-full border border-slate-300 flex items-center justify-center hover:bg-white text-slate-700 text-xs font-bold transition-colors cursor-pointer"
-                aria-label={`Increase quantity for ${product.name}`}
-              >
-                +
-              </button>
-            </div>
           )}
+
+          <button
+            onClick={handleSecondaryAction}
+            type="button"
+            className={`${isQuote ? 'col-span-2' : 'w-full'} flex items-center justify-center py-2.5 rounded-xl bg-primary text-on-primary text-xs font-bold hover:bg-primary-container active:scale-[0.98] transition-all text-center cursor-pointer`}
+          >
+            {secondaryCtaText}
+          </button>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

@@ -178,7 +178,7 @@ interface BestSellersProps {
   products?: ProductSchema[];
 }
 
-export default function BestSellers({}: BestSellersProps) {
+export default function BestSellers({ products = [] }: BestSellersProps) {
   const [activeCategory, setActiveCategory] = useState<"all" | "software" | "hardware">("all");
   const [gstChecked, setGstChecked] = useState(true);
   const [instantChecked, setInstantChecked] = useState(true);
@@ -186,7 +186,44 @@ export default function BestSellers({}: BestSellersProps) {
   const { addToCart, setIsCartOpen } = useCart();
   const { openQuoteModal } = useRequestQuote();
 
-  const filteredProducts = defaultProducts.filter((p) => {
+  const mappedProducts: FeaturedProduct[] = products.map((p) => {
+    const isHardware = p.category?.toLowerCase() === "hardware";
+    return {
+      id: p.id.toString(),
+      name: p.name,
+      category: isHardware ? "hardware" : "software",
+      categoryBadge: (p.category || "Software").toUpperCase(),
+      badgeClass: isHardware
+        ? "bg-tertiary-fixed text-on-tertiary-fixed"
+        : "bg-secondary-container text-on-secondary-container",
+      statusBadge: p.price_type === "quote" ? "Request Quote" : isHardware ? "In Stock" : "Instant Key",
+      statusIcon: p.price_type === "quote" ? "support_agent" : isHardware ? "local_shipping" : "bolt",
+      statusClass: isHardware
+        ? "text-tertiary bg-tertiary-fixed/40"
+        : "text-primary bg-surface-container",
+      subtitle: p.type || "Commercial License",
+      description: p.description,
+      priceFormatted: p.price_type === "quote" ? "Enterprise" : `₹${Number(p.price || 0).toLocaleString("en-IN")}`,
+      priceUnit: p.price_type === "quote" ? "" : isHardware ? "incl. GST" : "/ year",
+      gstNote: p.price_type === "quote"
+        ? "Contact Sales for Volume Pricing"
+        : isHardware
+        ? "Free Express Air Courier Pan-India"
+        : "+18% GST Claimable",
+      gstNoteClass: isHardware ? "text-secondary" : "text-tertiary",
+      priceNum: Number(p.price) || 0,
+      imageUrl: p.images?.[0] || "", // the UI calls getImageUrl on this
+      imageAlt: p.name,
+      secondaryCtaText: p.price_type === "quote" ? "Request Quote" : isHardware ? "Details" : "Buy Now",
+      secondaryCtaAction: p.price_type === "quote" ? "rfq" : isHardware ? "details" : "buy",
+      schema: p,
+    };
+  });
+
+  const isDev = process.env.NODE_ENV === "development";
+  const finalProducts = mappedProducts.length > 0 ? mappedProducts : isDev ? defaultProducts : [];
+
+  const filteredProducts = finalProducts.filter((p) => {
     if (activeCategory !== "all" && p.category !== activeCategory) return false;
     return true;
   });

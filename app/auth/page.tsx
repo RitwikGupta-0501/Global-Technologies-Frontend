@@ -317,10 +317,10 @@ function AuthContent() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 font-sans relative overflow-hidden">
+    <main className="min-h-screen bg-background font-sans relative overflow-hidden">
       <Navbar />
 
-      <div className="relative z-10 flex flex-col items-center justify-start pt-24 min-h-screen px-4 sm:px-6 lg:px-8 pb-12">
+      <div className="relative z-10 flex flex-col items-center justify-start pt-36 sm:pt-44 min-h-screen px-4 sm:px-6 lg:px-8 pb-12">
         <div className="w-full max-w-md">
           <div className="bg-white border border-gray-100 shadow-xl rounded-2xl overflow-hidden transition-all duration-300">
             {/* Header */}

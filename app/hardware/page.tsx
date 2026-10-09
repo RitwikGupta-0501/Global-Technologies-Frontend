@@ -1,5 +1,8 @@
 import Navbar from "../../components/Navbar";
 import ProductGrid from "../../components/home/ProductGrid";
+import HardwareCategories from "../../components/hardware/HardwareCategories";
+import HardwareBrands from "../../components/hardware/HardwareBrands";
+import HardwareBestSellers from "../../components/hardware/HardwareBestSellers";
 import Footer from "../../components/Footer";
 
 async function getProducts() {
@@ -23,26 +26,39 @@ export default async function HardwarePage() {
   const products = await getProducts();
 
   return (
-    <main className="min-h-screen bg-[#f8fafc] text-slate-700 font-sans">
+    <>
       <Navbar />
-
-      <div className="pt-36 pb-12 bg-white border-b border-slate-200/80 mb-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <span className="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200/60">
-            Specialized Hardware Import
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
-            Imported Korean Dashcams
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm sm:text-base text-slate-500">
-            High-precision vehicle recording systems, optical sensors, and commercial dashcam hardware. Available for individual drivers and corporate fleet bulk supply.
-          </p>
+      <main className="w-full pt-32 sm:pt-44 bg-background pb-20">
+        {/* Hardware Hero */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+          <div className="flex flex-col items-start gap-4">
+            <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-surface-container-high text-on-surface border border-outline-variant/30">
+              Specialized Hardware Import
+            </span>
+            <h1 className="text-4xl md:text-5xl font-extrabold text-on-surface tracking-tight">
+              Premium Vehicle Hardware
+            </h1>
+            <p className="max-w-2xl text-lg text-on-surface-variant font-medium">
+              High-precision vehicle recording systems, optical sensors, and commercial dashcam hardware. Available for individual drivers and corporate fleet bulk supply.
+            </p>
+          </div>
         </div>
-      </div>
 
-      <ProductGrid products={products} initialCategory="Hardware" hideCategoryFilter={true} />
+        <HardwareBrands />
+        <HardwareCategories />
+        <HardwareBestSellers products={products} />
 
+        {/* Anchor for product grid */}
+        <div id="product-grid" className="pt-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-on-surface tracking-tight border-b border-outline-variant/30 pb-4">
+              Full Hardware Catalog
+            </h2>
+          </div>
+          <ProductGrid products={products} initialCategory="Hardware" hideCategoryFilter={true} />
+        </div>
+      </main>
       <Footer />
-    </main>
+    </>
   );
 }
