@@ -172,7 +172,7 @@ export default function ProductGrid({ products, initialCategory = "All Products"
             className="w-full flex items-center justify-between px-4 py-3 bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-sm font-bold text-xs text-on-surface cursor-pointer"
           >
             <span className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary">filter_list</span>
+              <span className="material-symbols-outlined text-primary" aria-hidden="true">filter_list</span>
               <span>Filter Catalog</span>
               {activeFilterCount > (initialCategory !== "All Products" ? 1 : 0) && (
                 <span className="bg-primary text-on-primary text-[10px] px-2 py-0.5 rounded-full font-bold">
@@ -180,7 +180,7 @@ export default function ProductGrid({ products, initialCategory = "All Products"
                 </span>
               )}
             </span>
-            <span className="material-symbols-outlined">
+            <span className="material-symbols-outlined" aria-hidden="true">
               {isMobileFilterOpen ? "expand_less" : "expand_more"}
             </span>
           </button>
@@ -202,7 +202,7 @@ export default function ProductGrid({ products, initialCategory = "All Products"
               <option value="price_desc">Price: High to Low</option>
               <option value="name_asc">Name: A to Z</option>
             </select>
-            <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[18px] text-outline pointer-events-none">
+            <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[18px] text-outline pointer-events-none" aria-hidden="true">
               unfold_more
             </span>
           </div>

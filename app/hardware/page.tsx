@@ -28,7 +28,7 @@ export default async function HardwarePage() {
   return (
     <>
       <Navbar />
-      <main className="w-full pt-32 sm:pt-44 bg-background pb-20">
+      <main className="w-full pt-20 sm:pt-24 bg-background pb-20">
         {/* Hardware Hero */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
           <div className="flex flex-col items-start gap-4">

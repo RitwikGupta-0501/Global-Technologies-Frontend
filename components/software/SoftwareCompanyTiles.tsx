@@ -59,12 +59,15 @@ export default function SoftwareCompanyTiles() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
         {VENDORS.map((vendor) => (
-          <div
+          <article
             key={vendor.id}
             className="group relative p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 hover:bg-surface-container-low/40 hover:border-primary/40 transition-all duration-300"
           >
-            <div className="flex items-start justify-between mb-4">
-              <div className="w-10 h-10 rounded-xl bg-surface-container border border-outline-variant/30 flex items-center justify-center text-on-surface group-hover:border-primary/40 group-hover:text-primary transition-colors">
+            <div className="flex items-start justify-between mb-5">
+              <div 
+                className="w-10 h-10 rounded-xl bg-surface-container border border-outline-variant/30 flex items-center justify-center text-on-surface group-hover:border-primary/40 group-hover:text-primary transition-colors"
+                aria-hidden="true"
+              >
                 <span className="material-symbols-outlined text-[20px]">
                   {vendor.iconSymbol}
                 </span>
@@ -77,10 +80,10 @@ export default function SoftwareCompanyTiles() {
             <h3 className="text-lg font-bold tracking-tight text-on-surface group-hover:text-primary transition-colors">
               {vendor.name}
             </h3>
-            <p className="text-sm text-on-surface-variant mt-2 leading-relaxed">
+            <p className="text-sm text-on-surface-variant mt-1.5 leading-relaxed">
               {vendor.desc}
             </p>
-          </div>
+          </article>
         ))}
       </div>
     </section>

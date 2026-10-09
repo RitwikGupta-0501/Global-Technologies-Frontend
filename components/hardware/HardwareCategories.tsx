@@ -58,11 +58,11 @@ export default function HardwareCategories() {
             <div
               className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${cat.bgClass} ${cat.textClass} group-hover:scale-110 transition-transform duration-300`}
             >
-              <span className="material-symbols-outlined text-[24px]">{cat.icon}</span>
+              <span className="material-symbols-outlined text-[24px]" aria-hidden="true">{cat.icon}</span>
             </div>
             <h3 className="text-base font-bold text-on-surface mb-1">{cat.title}</h3>
             <p className="text-xs text-on-surface-variant font-medium">{cat.description}</p>
-            <span className="material-symbols-outlined absolute top-6 right-6 text-outline/50 group-hover:text-primary transition-colors text-[20px] opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0">
+            <span className="material-symbols-outlined absolute top-6 right-6 text-outline/50 group-hover:text-primary transition-colors text-[20px] opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0" aria-hidden="true">
               arrow_forward
             </span>
           </Link>

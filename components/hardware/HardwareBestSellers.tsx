@@ -72,7 +72,7 @@ export default function HardwareBestSellers({ products = [] }: HardwareBestSelle
           href="#product-grid"
           className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-surface-container-high text-on-surface text-xs font-bold hover:bg-surface-container-highest transition-colors"
         >
-          View All <span className="material-symbols-outlined text-[16px]">arrow_downward</span>
+          View All <span className="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_downward</span>
         </Link>
       </div>
 
@@ -88,7 +88,7 @@ export default function HardwareBestSellers({ products = [] }: HardwareBestSelle
                   {p.categoryBadge}
                 </span>
                 <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-md ${p.statusClass}`}>
-                  <span className="material-symbols-outlined text-[13px]">{p.statusIcon}</span>
+                  <span className="material-symbols-outlined text-[13px]" aria-hidden="true">{p.statusIcon}</span>
                   {p.statusBadge}
                 </span>
               </div>
@@ -128,7 +128,7 @@ export default function HardwareBestSellers({ products = [] }: HardwareBestSelle
                     type="button"
                     className="w-full flex items-center justify-center gap-1 py-2.5 rounded-xl bg-surface-container-high text-on-surface text-xs font-bold hover:bg-surface-container-highest active:scale-[0.98] transition-all cursor-pointer"
                   >
-                    <span className="material-symbols-outlined text-[16px]">add_shopping_cart</span>
+                    <span className="material-symbols-outlined text-[16px]" aria-hidden="true">add_shopping_cart</span>
                     <span>Cart</span>
                   </button>
                 )}
