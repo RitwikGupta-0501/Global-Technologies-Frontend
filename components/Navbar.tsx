@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useRequestQuote } from "../context/RequestQuoteContext";
@@ -9,6 +10,11 @@ import { DefaultService } from "@/api/services/DefaultService";
 import { ProductSchema } from "@/api/models/ProductSchema";
 
 export default function Navbar() {
+  const pathname = usePathname();
+  const isSoftwareActive = pathname === "/software" || pathname?.startsWith("/software/");
+  const isHardwareActive = pathname === "/hardware" || pathname?.startsWith("/hardware/");
+  const isStoreActive = pathname === "/" || pathname === "/#store";
+
   const { cart, setIsCartOpen } = useCart();
   const { user, logout } = useAuth();
   const { openQuoteModal } = useRequestQuote();
@@ -283,31 +289,61 @@ export default function Navbar() {
           <nav className="flex items-center gap-8 overflow-x-auto whitespace-nowrap py-2 text-sm font-medium">
             <Link
               href="/#store"
-              className="flex items-center gap-2 text-primary font-bold border-b-2 border-primary py-1"
+              className={`flex items-center gap-2 py-1 transition-colors ${
+                isStoreActive
+                  ? "text-primary font-bold border-b-2 border-primary"
+                  : "text-on-surface-variant hover:text-primary"
+              }`}
             >
               <span>Store</span>
-              <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">
+              <span className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full ${
+                isStoreActive
+                  ? "bg-primary/10 text-primary"
+                  : "bg-surface-container-high text-on-surface-variant"
+              }`}>
                 All Products
               </span>
             </Link>
             <Link
               href="/software"
-              className="text-on-surface-variant hover:text-primary transition-colors py-1"
+              className={`flex items-center gap-2 py-1 transition-colors ${
+                isSoftwareActive
+                  ? "text-primary font-bold border-b-2 border-primary"
+                  : "text-on-surface-variant hover:text-primary"
+              }`}
             >
-              Commercial Software
+              <span>Software</span>
+              <span className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full ${
+                isSoftwareActive
+                  ? "bg-primary/10 text-primary"
+                  : "bg-surface-container-high text-on-surface-variant"
+              }`}>
+                Commercial
+              </span>
             </Link>
             <Link
               href="/hardware"
-              className="text-on-surface-variant hover:text-primary transition-colors py-1"
+              className={`flex items-center gap-2 py-1 transition-colors ${
+                isHardwareActive
+                  ? "text-primary font-bold border-b-2 border-primary"
+                  : "text-on-surface-variant hover:text-primary"
+              }`}
             >
-              Dashcams &amp; Fleet
+              <span>Hardware</span>
+              <span className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full ${
+                isHardwareActive
+                  ? "bg-primary/10 text-primary"
+                  : "bg-surface-container-high text-on-surface-variant"
+              }`}>
+                Dashcams
+              </span>
             </Link>
-            <a
-              href="#enterprise-banner"
+            <Link
+              href="/#enterprise-banner"
               className="text-on-surface-variant hover:text-primary transition-colors py-1"
             >
               GST &amp; B2B Invoicing
-            </a>
+            </Link>
             <button
               onClick={() => openQuoteModal()}
               type="button"
@@ -396,43 +432,71 @@ export default function Navbar() {
             <Link
               href="/#store"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-between px-3 py-2.5 rounded-xl font-bold text-primary bg-primary/5 hover:bg-primary/10 transition-colors"
+              className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors ${
+                isStoreActive
+                  ? "font-bold text-primary bg-primary/10"
+                  : "text-sm font-semibold text-on-surface hover:bg-surface-container-low"
+              }`}
             >
               <div className="flex items-center gap-3">
                 <span className="material-symbols-outlined text-[20px]">storefront</span>
                 <span>Storefront (All Products)</span>
               </div>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-on-primary">
-                Catalog
-              </span>
+              {isStoreActive ? (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-on-primary">
+                  Active
+                </span>
+              ) : (
+                <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+              )}
             </Link>
 
             <Link
               href="/software"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-on-surface hover:bg-surface-container-low transition-colors"
+              className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors ${
+                isSoftwareActive
+                  ? "font-bold text-primary bg-primary/10"
+                  : "text-sm font-semibold text-on-surface hover:bg-surface-container-low"
+              }`}
             >
               <div className="flex items-center gap-3">
                 <span className="material-symbols-outlined text-[20px] text-primary">terminal</span>
-                <span>Commercial Software</span>
+                <span>Software Solutions &amp; Licenses</span>
               </div>
-              <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+              {isSoftwareActive ? (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-on-primary">
+                  Active
+                </span>
+              ) : (
+                <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+              )}
             </Link>
 
             <Link
               href="/hardware"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-on-surface hover:bg-surface-container-low transition-colors"
+              className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors ${
+                isHardwareActive
+                  ? "font-bold text-primary bg-primary/10"
+                  : "text-sm font-semibold text-on-surface hover:bg-surface-container-low"
+              }`}
             >
               <div className="flex items-center gap-3">
                 <span className="material-symbols-outlined text-[20px] text-tertiary">videocam</span>
-                <span>Vehicle Dashcams &amp; Fleet</span>
+                <span>Hardware &amp; Fleet Dashcams</span>
               </div>
-              <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+              {isHardwareActive ? (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-on-primary">
+                  Active
+                </span>
+              ) : (
+                <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+              )}
             </Link>
 
-            <a
-              href="#enterprise-banner"
+            <Link
+              href="/#enterprise-banner"
               onClick={() => setIsMobileMenuOpen(false)}
               className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-on-surface hover:bg-surface-container-low transition-colors"
             >
@@ -441,7 +505,7 @@ export default function Navbar() {
                 <span>GST Invoicing &amp; ITC</span>
               </div>
               <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
-            </a>
+            </Link>
           </div>
 
           {/* Procurement Actions */}
