@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { allPartners, BrandItem } from "@/lib/partners-data";
+import SectionHeader from "../ui/SectionHeader";
 
 interface TrustedClient {
   name: string;
@@ -27,15 +28,11 @@ export default function OEMAlliances() {
       aria-label="Direct Brand Partners and OEM Alliances"
     >
       <div className="space-y-10 sm:space-y-12">
-        {/* Header Block: Left-Aligned & Clean */}
-        <div className="max-w-3xl space-y-2">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-on-surface">
-            Meet some of our Partners
-          </h2>
-          <p className="text-xs sm:text-sm md:text-base text-on-surface-variant leading-relaxed max-w-2xl font-normal">
-            Primary contract agreements with global software publishers and automotive telematics manufacturers. Authentic licensing, institutional warranties, and dedicated account SLAs.
-          </p>
-        </div>
+        <SectionHeader
+          title="Meet some of our Partners"
+          description="Primary contract agreements with global software publishers and automotive telematics manufacturers. Authentic licensing, institutional warranties, and dedicated account SLAs."
+          className="mb-0"
+        />
 
         {/* Divided 4x4 Partner Matrix (Reference Grid Layout) */}
         <div className="rounded-2xl sm:rounded-3xl border border-outline-variant/30 overflow-hidden shadow-[0_2px_24px_rgba(11,28,48,0.03)]">

@@ -11,9 +11,11 @@ import { ProductSchema } from "@/api/models/ProductSchema";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const isHomeActive = pathname === "/";
   const isSoftwareActive = pathname === "/software" || pathname?.startsWith("/software/");
   const isHardwareActive = pathname === "/hardware" || pathname?.startsWith("/hardware/");
-  const isStoreActive = pathname === "/" || pathname === "/#store";
+  const isAboutActive = pathname === "/about" || pathname?.startsWith("/about/");
+  const isPartnersActive = pathname === "/partners" || pathname?.startsWith("/partners/");
 
   const { cart, setIsCartOpen } = useCart();
   const { user, logout } = useAuth();
@@ -24,7 +26,7 @@ export default function Navbar() {
   const [isSearching, setIsSearching] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [headerHeight, setHeaderHeight] = useState(96);
+  const [headerHeight, setHeaderHeight] = useState(64);
 
   const searchRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
@@ -108,37 +110,7 @@ export default function Navbar() {
   return (
     <>
       <header ref={headerRef} className="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl border-b border-outline-variant/30 shadow-[0_1px_12px_rgba(0,0,0,0.04)]">
-      {/* 1. Top Utility Bar */}
-      <div className="bg-inverse-surface text-inverse-on-surface text-xs font-medium border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-9 flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-3 truncate">
-            <span className="inline-flex items-center gap-1.5 text-tertiary-fixed-dim font-semibold shrink-0">
-              <span className="material-symbols-outlined text-[15px]">verified</span>
-              100% Verified GST Invoices
-            </span>
-            <span className="text-white/20 hidden sm:inline">•</span>
-            <span className="hidden sm:inline text-inverse-on-surface/90 truncate">
-              Express Pan-India Delivery
-            </span>
-          </div>
-          <div className="hidden sm:flex items-center gap-6 text-xs shrink-0">
-            <span className="flex items-center gap-1 cursor-default text-inverse-on-surface/90">
-              <span className="material-symbols-outlined text-[14px]">currency_rupee</span>INR (₹)
-            </span>
-            <span className="hidden sm:inline-block text-white/20">|</span>
-            <button
-              onClick={() => openQuoteModal()}
-              type="button"
-              className="flex items-center gap-1.5 cursor-pointer hover:text-white transition-colors text-inverse-on-surface/90"
-            >
-              <span className="material-symbols-outlined text-[15px] text-tertiary-fixed-dim">support_agent</span>
-              Enterprise Procurement Desk
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. Main Header Row */}
+      {/* Main Header Row */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4 lg:gap-8">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-3 shrink-0">
@@ -288,21 +260,14 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex items-center gap-8 overflow-x-auto whitespace-nowrap py-2 text-sm font-medium">
             <Link
-              href="/#store"
+              href="/"
               className={`flex items-center gap-2 py-1 transition-colors ${
-                isStoreActive
+                isHomeActive
                   ? "text-primary font-bold border-b-2 border-primary"
                   : "text-on-surface-variant hover:text-primary"
               }`}
             >
-              <span>Store</span>
-              <span className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full ${
-                isStoreActive
-                  ? "bg-primary/10 text-primary"
-                  : "bg-surface-container-high text-on-surface-variant"
-              }`}>
-                All Products
-              </span>
+              <span>Home</span>
             </Link>
             <Link
               href="/software"
@@ -313,13 +278,6 @@ export default function Navbar() {
               }`}
             >
               <span>Software</span>
-              <span className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full ${
-                isSoftwareActive
-                  ? "bg-primary/10 text-primary"
-                  : "bg-surface-container-high text-on-surface-variant"
-              }`}>
-                Commercial
-              </span>
             </Link>
             <Link
               href="/hardware"
@@ -330,27 +288,27 @@ export default function Navbar() {
               }`}
             >
               <span>Hardware</span>
-              <span className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full ${
-                isHardwareActive
-                  ? "bg-primary/10 text-primary"
-                  : "bg-surface-container-high text-on-surface-variant"
-              }`}>
-                Dashcams
-              </span>
             </Link>
             <Link
-              href="/#enterprise-banner"
-              className="text-on-surface-variant hover:text-primary transition-colors py-1"
+              href="/partners"
+              className={`flex items-center gap-2 py-1 transition-colors ${
+                isPartnersActive
+                  ? "text-primary font-bold border-b-2 border-primary"
+                  : "text-on-surface-variant hover:text-primary"
+              }`}
             >
-              GST &amp; B2B Invoicing
+              <span>Partners</span>
             </Link>
-            <button
-              onClick={() => openQuoteModal()}
-              type="button"
-              className="text-on-surface-variant hover:text-primary transition-colors py-1 cursor-pointer"
+            <Link
+              href="/about"
+              className={`flex items-center gap-2 py-1 transition-colors ${
+                isAboutActive
+                  ? "text-primary font-bold border-b-2 border-primary"
+                  : "text-on-surface-variant hover:text-primary"
+              }`}
             >
-              Request Quote (RFQ)
-            </button>
+              <span>About</span>
+            </Link>
           </nav>
         </div>
       </div>
@@ -430,19 +388,19 @@ export default function Navbar() {
               Storefront Navigation
             </div>
             <Link
-              href="/#store"
+              href="/"
               onClick={() => setIsMobileMenuOpen(false)}
               className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors ${
-                isStoreActive
+                isHomeActive
                   ? "font-bold text-primary bg-primary/10"
                   : "text-sm font-semibold text-on-surface hover:bg-surface-container-low"
               }`}
             >
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-[20px]">storefront</span>
-                <span>Storefront (All Products)</span>
+                <span className="material-symbols-outlined text-[20px]">home</span>
+                <span>Home</span>
               </div>
-              {isStoreActive ? (
+              {isHomeActive ? (
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-on-primary">
                   Active
                 </span>
@@ -462,7 +420,7 @@ export default function Navbar() {
             >
               <div className="flex items-center gap-3">
                 <span className="material-symbols-outlined text-[20px] text-primary">terminal</span>
-                <span>Software Solutions &amp; Licenses</span>
+                <span>Software</span>
               </div>
               {isSoftwareActive ? (
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-on-primary">
@@ -484,7 +442,7 @@ export default function Navbar() {
             >
               <div className="flex items-center gap-3">
                 <span className="material-symbols-outlined text-[20px] text-tertiary">videocam</span>
-                <span>Hardware &amp; Fleet Dashcams</span>
+                <span>Hardware</span>
               </div>
               {isHardwareActive ? (
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-on-primary">
@@ -496,15 +454,47 @@ export default function Navbar() {
             </Link>
 
             <Link
-              href="/#enterprise-banner"
+              href="/partners"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-on-surface hover:bg-surface-container-low transition-colors"
+              className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors ${
+                isPartnersActive
+                  ? "font-bold text-primary bg-primary/10"
+                  : "text-sm font-semibold text-on-surface hover:bg-surface-container-low"
+              }`}
             >
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-[20px] text-outline">receipt_long</span>
-                <span>GST Invoicing &amp; ITC</span>
+                <span className="material-symbols-outlined text-[20px] text-outline">handshake</span>
+                <span>Partners &amp; OEMs</span>
               </div>
-              <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+              {isPartnersActive ? (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-on-primary">
+                  Active
+                </span>
+              ) : (
+                <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+              )}
+            </Link>
+
+            <Link
+              href="/about"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors ${
+                isAboutActive
+                  ? "font-bold text-primary bg-primary/10"
+                  : "text-sm font-semibold text-on-surface hover:bg-surface-container-low"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-[20px] text-outline">info</span>
+                <span>About</span>
+              </div>
+              {isAboutActive ? (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-on-primary">
+                  Active
+                </span>
+              ) : (
+                <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+              )}
             </Link>
           </div>
 

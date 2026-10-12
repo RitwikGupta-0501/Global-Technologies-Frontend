@@ -33,7 +33,7 @@ export default async function SoftwarePage() {
   return (
     <>
       <Navbar />
-      <main className="w-full pt-36 sm:pt-44 pb-20 bg-background">
+      <main className="w-full pt-28 sm:pt-36 pb-20 bg-background">
         <SoftwareHero />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 lg:space-y-24 mt-12 mb-20">

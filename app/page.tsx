@@ -34,7 +34,7 @@ export default async function Home() {
     <>
       <Navbar />
 
-      <main className="w-full pt-44 bg-background">
+      <main className="w-full pt-28 sm:pt-36 bg-background">
         <Hero />
         <OEMAlliances />
         <Categories />

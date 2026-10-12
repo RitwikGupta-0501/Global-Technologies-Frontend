@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { getImageUrl } from "@/lib/utils";
+import SectionHeader from "../ui/SectionHeader";
 
 const SOFTWARE_TAGS = [
   "Developer Tools",
@@ -21,11 +22,10 @@ const HARDWARE_TAGS = [
 export default function Categories() {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-      <div className="mb-6">
-        <h2 className="text-2xl sm:text-3xl font-bold text-on-surface tracking-tight">
-          Product Categories
-        </h2>
-      </div>
+      <SectionHeader
+        title="Product Categories"
+        description="Direct enterprise procurement across commercial software licenses and certified vehicle telematics hardware."
+      />
 
       <div className="space-y-6">
         {/* Division 1: Commercial Software (Horizontal Card, Image Left, Content Right) */}

@@ -37,8 +37,8 @@ export default async function HardwarePage() {
   return (
     <>
       <Navbar />
-      {/* pt-36 on mobile, pt-44 on desktop to comfortably clear the fixed navbar */}
-      <main className="w-full pt-36 sm:pt-44 pb-20 bg-background">
+      {/* pt-28 on mobile, pt-36 on desktop to comfortably clear the fixed navbar */}
+      <main className="w-full pt-28 sm:pt-36 pb-20 bg-background">
         <HardwareHero />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 lg:space-y-24 mt-12 mb-20">

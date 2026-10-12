@@ -12,7 +12,7 @@ import { getImageUrl } from "@/lib/utils";
 import { DefaultService } from "@/api/services/DefaultService";
 
 export default function RequestQuoteModal() {
-  const { isOpen, selectedProduct, closeQuoteModal } = useRequestQuote();
+  const { isOpen, selectedProduct, closeQuoteModal, markProductQuoted } = useRequestQuote();
   const { user } = useAuth();
   const pathname = usePathname();
 

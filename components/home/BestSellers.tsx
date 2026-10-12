@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ProductSchema } from "@/api/models/ProductSchema";
 import { getImageUrl } from "@/lib/utils";
 import ProductCard from "../ProductCard";
+import SectionHeader from "../ui/SectionHeader";
 
 const defaultProducts: ProductSchema[] = [
   {
@@ -86,14 +87,10 @@ export default function BestSellers({ products = [] }: BestSellersProps) {
 
   return (
     <section id="store" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
-      <div className="border-b border-outline-variant/30 pb-6 mb-8">
-        <h2 className="text-2xl sm:text-3xl font-bold text-on-surface tracking-tight">
-          Featured Store Best-Sellers
-        </h2>
-        <p className="text-sm text-on-surface-variant mt-1">
-          Guaranteed genuine serial keys &amp; official OEM boxed hardware with valid tax deductions.
-        </p>
-      </div>
+      <SectionHeader
+        title="Featured Store Best-Sellers"
+        description="Guaranteed genuine serial keys & official OEM boxed hardware with valid tax deductions."
+      />
 
       <div className="flex flex-col lg:flex-row gap-8 items-start">
         {/* Sidebar Filter Rail */}
