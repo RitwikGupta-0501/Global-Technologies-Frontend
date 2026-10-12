@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useRequestQuote } from "../context/RequestQuoteContext";
@@ -9,6 +10,13 @@ import { DefaultService } from "@/api/services/DefaultService";
 import { ProductSchema } from "@/api/models/ProductSchema";
 
 export default function Navbar() {
+  const pathname = usePathname();
+  const isHomeActive = pathname === "/";
+  const isSoftwareActive = pathname === "/software" || pathname?.startsWith("/software/");
+  const isHardwareActive = pathname === "/hardware" || pathname?.startsWith("/hardware/");
+  const isAboutActive = pathname === "/about" || pathname?.startsWith("/about/");
+  const isPartnersActive = pathname === "/partners" || pathname?.startsWith("/partners/");
+
   const { cart, setIsCartOpen } = useCart();
   const { user, logout } = useAuth();
   const { openQuoteModal } = useRequestQuote();
@@ -18,7 +26,7 @@ export default function Navbar() {
   const [isSearching, setIsSearching] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [headerHeight, setHeaderHeight] = useState(96);
+  const [headerHeight, setHeaderHeight] = useState(64);
 
   const searchRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
@@ -102,37 +110,7 @@ export default function Navbar() {
   return (
     <>
       <header ref={headerRef} className="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl border-b border-outline-variant/30 shadow-[0_1px_12px_rgba(0,0,0,0.04)]">
-      {/* 1. Top Utility Bar */}
-      <div className="bg-inverse-surface text-inverse-on-surface text-xs font-medium border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-9 flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-3 truncate">
-            <span className="inline-flex items-center gap-1.5 text-tertiary-fixed-dim font-semibold shrink-0">
-              <span className="material-symbols-outlined text-[15px]">verified</span>
-              100% Verified GST Invoices
-            </span>
-            <span className="text-white/20 hidden sm:inline">•</span>
-            <span className="hidden sm:inline text-inverse-on-surface/90 truncate">
-              Express Pan-India Delivery
-            </span>
-          </div>
-          <div className="hidden sm:flex items-center gap-6 text-xs shrink-0">
-            <span className="flex items-center gap-1 cursor-default text-inverse-on-surface/90">
-              <span className="material-symbols-outlined text-[14px]">currency_rupee</span>INR (₹)
-            </span>
-            <span className="hidden sm:inline-block text-white/20">|</span>
-            <button
-              onClick={() => openQuoteModal()}
-              type="button"
-              className="flex items-center gap-1.5 cursor-pointer hover:text-white transition-colors text-inverse-on-surface/90"
-            >
-              <span className="material-symbols-outlined text-[15px] text-tertiary-fixed-dim">support_agent</span>
-              Enterprise Procurement Desk
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. Main Header Row */}
+      {/* Main Header Row */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4 lg:gap-8">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-3 shrink-0">
@@ -282,39 +260,55 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex items-center gap-8 overflow-x-auto whitespace-nowrap py-2 text-sm font-medium">
             <Link
-              href="/#store"
-              className="flex items-center gap-2 text-primary font-bold border-b-2 border-primary py-1"
+              href="/"
+              className={`flex items-center gap-2 py-1 transition-colors ${
+                isHomeActive
+                  ? "text-primary font-bold border-b-2 border-primary"
+                  : "text-on-surface-variant hover:text-primary"
+              }`}
             >
-              <span>Store</span>
-              <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">
-                All Products
-              </span>
+              <span>Home</span>
             </Link>
             <Link
               href="/software"
-              className="text-on-surface-variant hover:text-primary transition-colors py-1"
+              className={`flex items-center gap-2 py-1 transition-colors ${
+                isSoftwareActive
+                  ? "text-primary font-bold border-b-2 border-primary"
+                  : "text-on-surface-variant hover:text-primary"
+              }`}
             >
-              Commercial Software
+              <span>Software</span>
             </Link>
             <Link
               href="/hardware"
-              className="text-on-surface-variant hover:text-primary transition-colors py-1"
+              className={`flex items-center gap-2 py-1 transition-colors ${
+                isHardwareActive
+                  ? "text-primary font-bold border-b-2 border-primary"
+                  : "text-on-surface-variant hover:text-primary"
+              }`}
             >
-              Dashcams &amp; Fleet
+              <span>Hardware</span>
             </Link>
-            <a
-              href="#enterprise-banner"
-              className="text-on-surface-variant hover:text-primary transition-colors py-1"
+            <Link
+              href="/partners"
+              className={`flex items-center gap-2 py-1 transition-colors ${
+                isPartnersActive
+                  ? "text-primary font-bold border-b-2 border-primary"
+                  : "text-on-surface-variant hover:text-primary"
+              }`}
             >
-              GST &amp; B2B Invoicing
-            </a>
-            <button
-              onClick={() => openQuoteModal()}
-              type="button"
-              className="text-on-surface-variant hover:text-primary transition-colors py-1 cursor-pointer"
+              <span>Partners</span>
+            </Link>
+            <Link
+              href="/about"
+              className={`flex items-center gap-2 py-1 transition-colors ${
+                isAboutActive
+                  ? "text-primary font-bold border-b-2 border-primary"
+                  : "text-on-surface-variant hover:text-primary"
+              }`}
             >
-              Request Quote (RFQ)
-            </button>
+              <span>About</span>
+            </Link>
           </nav>
         </div>
       </div>
@@ -394,54 +388,114 @@ export default function Navbar() {
               Storefront Navigation
             </div>
             <Link
-              href="/#store"
+              href="/"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-between px-3 py-2.5 rounded-xl font-bold text-primary bg-primary/5 hover:bg-primary/10 transition-colors"
+              className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors ${
+                isHomeActive
+                  ? "font-bold text-primary bg-primary/10"
+                  : "text-sm font-semibold text-on-surface hover:bg-surface-container-low"
+              }`}
             >
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-[20px]">storefront</span>
-                <span>Storefront (All Products)</span>
+                <span className="material-symbols-outlined text-[20px]">home</span>
+                <span>Home</span>
               </div>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-on-primary">
-                Catalog
-              </span>
+              {isHomeActive ? (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-on-primary">
+                  Active
+                </span>
+              ) : (
+                <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+              )}
             </Link>
 
             <Link
               href="/software"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-on-surface hover:bg-surface-container-low transition-colors"
+              className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors ${
+                isSoftwareActive
+                  ? "font-bold text-primary bg-primary/10"
+                  : "text-sm font-semibold text-on-surface hover:bg-surface-container-low"
+              }`}
             >
               <div className="flex items-center gap-3">
                 <span className="material-symbols-outlined text-[20px] text-primary">terminal</span>
-                <span>Commercial Software</span>
+                <span>Software</span>
               </div>
-              <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+              {isSoftwareActive ? (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-on-primary">
+                  Active
+                </span>
+              ) : (
+                <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+              )}
             </Link>
 
             <Link
               href="/hardware"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-on-surface hover:bg-surface-container-low transition-colors"
+              className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors ${
+                isHardwareActive
+                  ? "font-bold text-primary bg-primary/10"
+                  : "text-sm font-semibold text-on-surface hover:bg-surface-container-low"
+              }`}
             >
               <div className="flex items-center gap-3">
                 <span className="material-symbols-outlined text-[20px] text-tertiary">videocam</span>
-                <span>Vehicle Dashcams &amp; Fleet</span>
+                <span>Hardware</span>
               </div>
-              <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+              {isHardwareActive ? (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-on-primary">
+                  Active
+                </span>
+              ) : (
+                <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+              )}
             </Link>
 
-            <a
-              href="#enterprise-banner"
+            <Link
+              href="/partners"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-on-surface hover:bg-surface-container-low transition-colors"
+              className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors ${
+                isPartnersActive
+                  ? "font-bold text-primary bg-primary/10"
+                  : "text-sm font-semibold text-on-surface hover:bg-surface-container-low"
+              }`}
             >
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-[20px] text-outline">receipt_long</span>
-                <span>GST Invoicing &amp; ITC</span>
+                <span className="material-symbols-outlined text-[20px] text-outline">handshake</span>
+                <span>Partners &amp; OEMs</span>
               </div>
-              <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
-            </a>
+              {isPartnersActive ? (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-on-primary">
+                  Active
+                </span>
+              ) : (
+                <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+              )}
+            </Link>
+
+            <Link
+              href="/about"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors ${
+                isAboutActive
+                  ? "font-bold text-primary bg-primary/10"
+                  : "text-sm font-semibold text-on-surface hover:bg-surface-container-low"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-[20px] text-outline">info</span>
+                <span>About</span>
+              </div>
+              {isAboutActive ? (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-on-primary">
+                  Active
+                </span>
+              ) : (
+                <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+              )}
+            </Link>
           </div>
 
           {/* Procurement Actions */}
