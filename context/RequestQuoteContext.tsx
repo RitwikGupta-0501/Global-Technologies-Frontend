@@ -6,8 +6,10 @@ import { ProductSchema } from "@/api/models/ProductSchema";
 interface RequestQuoteContextType {
   isOpen: boolean;
   selectedProduct: ProductSchema | null;
+  quotedProductIds: number[];
   openQuoteModal: (product?: ProductSchema) => void;
   closeQuoteModal: () => void;
+  markProductQuoted: (id: number) => void;
 }
 
 const RequestQuoteContext = createContext<RequestQuoteContextType | undefined>(
@@ -34,6 +36,7 @@ export function RequestQuoteProvider({ children }: { children: ReactNode }) {
   const [selectedProduct, setSelectedProduct] = useState<ProductSchema | null>(
     null,
   );
+  const [quotedProductIds, setQuotedProductIds] = useState<number[]>([]);
 
   const openQuoteModal = (product?: ProductSchema) => {
     setSelectedProduct(product || genericRFQProduct);
@@ -48,9 +51,20 @@ export function RequestQuoteProvider({ children }: { children: ReactNode }) {
     document.body.style.overflow = "unset";
   };
 
+  const markProductQuoted = (id: number) => {
+    setQuotedProductIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  };
+
   return (
     <RequestQuoteContext.Provider
-      value={{ isOpen, selectedProduct, openQuoteModal, closeQuoteModal }}
+      value={{
+        isOpen,
+        selectedProduct,
+        quotedProductIds,
+        openQuoteModal,
+        closeQuoteModal,
+        markProductQuoted,
+      }}
     >
       {children}
     </RequestQuoteContext.Provider>

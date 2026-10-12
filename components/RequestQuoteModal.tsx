@@ -67,6 +67,7 @@ export default function RequestQuoteModal() {
       });
 
       setStep("success");
+      markProductQuoted(selectedProduct.id);
       toast.success("Quote request received!");
     } catch (error: unknown) {
       console.error(error);
