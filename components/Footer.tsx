@@ -91,6 +91,16 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link className="hover:text-primary transition-colors" href="/partners">
+                  Direct OEM Partner Directory
+                </Link>
+              </li>
+              <li>
+                <Link className="hover:text-primary transition-colors" href="/partners#become-a-partner">
+                  Become an OEM Partner
+                </Link>
+              </li>
+              <li>
                 <button
                   type="button"
                   onClick={() => openQuoteModal()}

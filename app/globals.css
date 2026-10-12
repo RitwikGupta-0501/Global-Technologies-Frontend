@@ -110,6 +110,30 @@
   animation-play-state: paused;
 }
 
+@keyframes marqueeReverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0%); }
+}
+
+.animate-marquee-reverse {
+  display: flex;
+  width: 200%;
+  animation: marqueeReverse 35s linear infinite;
+}
+
+.animate-marquee-reverse:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-marquee-reverse {
+    animation: none !important;
+    width: 100% !important;
+    overflow-x: auto !important;
+  }
+}
+
 @keyframes tileIn {
   0% {
     opacity: 0;
